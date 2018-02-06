@@ -112,3 +112,9 @@ void GameStateLevel2Unload()
 	AEGfxMeshFree(pMesh);
 	AEGfxTextureUnload(pTexture);
 }
+
+void SetCam()
+{
+
+  AEGfxSetCamPosition(1, 1);
+}

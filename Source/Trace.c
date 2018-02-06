@@ -44,7 +44,7 @@ static FILE * traceFile;
 void TraceInit()
 {
 	// TODO: Open "trace.log" for writing (text mode).
-	fopen_s(&traceFile, "trace.log", "wt");
+	fopen_s(&traceFile, "Data\\trace.log", "wt");
 
 	if (traceFile == 0)
 	{

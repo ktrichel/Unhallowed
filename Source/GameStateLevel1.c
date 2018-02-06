@@ -35,8 +35,9 @@ static AEVec2 Position;
 static TransformPtr objTransform;
 static PhysicsPtr objPhysics;
 
-static AEVec2 Empty = { 0 };
-static AEVec2 Acceleration = { 5.0f, -9.81f };
+static AEVec2 Empty = { 0.0f };
+static AEVec2 GravityAcceleration = { 0.0f, -9.81f };
+static AEVec2 PlayerVelocity = { 3.0f, 3.0f };
 
 void GameStateLevel1Load()
 {
@@ -79,7 +80,7 @@ void GameStateLevel1Init()
 	//Set AEG blend mode to blend
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 
-	objPhysics = CreatePhysics(Empty, Acceleration, Empty, 0.0f );
+	objPhysics = CreatePhysics(Empty, GravityAcceleration, Empty, 0.0f );
 	objTransform = CreateTransform();
 }
 
@@ -89,13 +90,13 @@ void GameStateLevel1Update(float dt)
 	TraceMessage("Level1: Update");
 	if (AEInputCheckCurr(VK_RIGHT))
 	{
-		TransformVelocity(objTransform, 3.0f, 0.0f);
+		TransformVelocity(objTransform, PlayerVelocity.x, 0.0f);
 		AnimationUpdate(pAnimation, dt);
 	}
 	if (AEInputCheckCurr(VK_LEFT))
-		TransformVelocity(objTransform, -3.0f, 0.0f);
+		TransformVelocity(objTransform, -PlayerVelocity.x, 0.0f);
 	if (AEInputCheckCurr(VK_UP))
-		TransformVelocity(objTransform, 0.0f, 3.0f);
+		TransformVelocity(objTransform, 0.0f, PlayerVelocity.y);
 
 	PhysicsUpdate(objPhysics, objTransform, dt);
 	SpriteDraw(pSprite, GetOldTranslation(objPhysics));

@@ -30,7 +30,7 @@ void PhysicsUpdate(PhysicsPtr physics, TransformPtr transform, float dt)
 		physics->velocity.y += physics->acceleration.y * dt;
 		physics->oldTranslation.x += physics->velocity.x * dt;
 		physics->oldTranslation.y += physics->velocity.y * dt;
-
+    AEGfxSetCamPosition(transform->translation.x, transform->translation.y);
 		transform->translation = physics->oldTranslation;
 	}
 
@@ -76,6 +76,7 @@ void TransformVelocity(TransformPtr transform, float x, float y)
 	{
 		transform->translation.x += x;
 		transform->translation.y += y;
+    AEGfxSetCamPosition(transform->translation.x, transform->translation.y);
 	}
 }
 

@@ -20,6 +20,7 @@
 #include "Sprite.h"
 #include "SpriteSource.h"
 #include "Physics.h"
+#include "Collision.h"
 #include <AEEngine.h>
 #include <stdlib.h>
 
@@ -29,14 +30,25 @@ static AEGfxTexture * pTexture;
 static AEGfxVertexList * pMesh;
 static SpritePtr pSprite;
 static SpriteSourcePtr pSSource;
+static AEGfxTexture * pTexture2;
+static AEGfxVertexList * pMesh2;
+static SpritePtr pSprite2;
+static SpriteSourcePtr pSSource2;
 static AnimationPtr pAnimation;
 static AEVec2 Position;
 
 static TransformPtr objTransform;
 static PhysicsPtr objPhysics;
+static BoundingBoxPtr BoxEarth;
+static BoundingBoxPtr BoxNumber;
 
 static AEVec2 Empty = { 0 };
-static AEVec2 Acceleration = { 5.0f, -9.81f };
+static AEVec2 Earth = { 0.0f, -500.0f };
+static AEVec2 Velocity = { 0.0f, 0.0f };
+static AEVec2 Acceleration = { 0.0f, -20.0f };
+static AEVec2 NumberHalfSize = { 50.0f, 50.0f };
+static AEVec2 EarthHalfSize = { 300.0f, 300.0f };
+static bool IsJumping = 0;
 
 void GameStateLevel1Load()
 {
@@ -54,7 +66,9 @@ void GameStateLevel1Load()
 		Position.x = 0;
 		Position.y = 0;
 		pMesh = MeshCreateQuad(50, 50, 0.25, 0.25, "Mesh4x4");
+		pMesh2 = MeshCreateQuad(300, 300, 1, 1, "Mesh1x1");
 		pTexture = AEGfxTextureLoad("Assets\\Hexidecimal.png");
+		pTexture2 = AEGfxTextureLoad("Assets\\PlanetTexture.png");
 		fclose(Level1file);
 	}
 	else
@@ -67,9 +81,13 @@ void GameStateLevel1Init()
 {
 	TraceMessage("Level1: Init");
 	pSSource = SpriteSourceCreate(4, 4, pTexture);
+	pSSource2 = SpriteSourceCreate(1, 1, pTexture2);
 	pSprite = SpriteCreate("Level1 Sprite");
+	pSprite2 = SpriteCreate("second Level1 Sprite");
 	SpriteSetMesh(pSprite, pMesh);
+	SpriteSetMesh(pSprite2, pMesh2);
 	SpriteSetSpriteSource(pSprite, pSSource);
+	SpriteSetSpriteSource(pSprite2, pSSource2);
 	SpriteSetFrame(pSprite, 0);
 	pAnimation = AnimationCreate(pSprite);
 	AnimationPlay(pAnimation, 3, 0.25f, true);
@@ -79,25 +97,58 @@ void GameStateLevel1Init()
 	//Set AEG blend mode to blend
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 
-	objPhysics = CreatePhysics(Empty, Acceleration, Empty, 0.0f );
+	objPhysics = CreatePhysics(Empty, Acceleration, Velocity, 0.0f );
 	objTransform = CreateTransform();
+	BoxNumber = CreateBoundingBox(Empty, NumberHalfSize);
+	BoxEarth = CreateBoundingBox(Earth, EarthHalfSize);
 }
 
 void GameStateLevel1Update(float dt)
 {
-	UNREFERENCED_PARAMETER(dt);
 	TraceMessage("Level1: Update");
-	if (AEInputCheckCurr(VK_RIGHT))
+	if (AEInputCheckCurr(VK_RIGHT) && 
+		(GetOldTranslation(objPhysics).x + NumberHalfSize.x - 5.0f<= Earth.x - EarthHalfSize.x || 
+		 GetOldTranslation(objPhysics).y - NumberHalfSize.y + 5.0f>= Earth.y + EarthHalfSize.y))
 	{
 		TransformVelocity(objTransform, 3.0f, 0.0f);
 		AnimationUpdate(pAnimation, dt);
 	}
-	if (AEInputCheckCurr(VK_LEFT))
+	if (AEInputCheckCurr(VK_LEFT) && 
+		(GetOldTranslation(objPhysics).x - NumberHalfSize.x + 5.0f>= Earth.x + EarthHalfSize.x ||
+		 GetOldTranslation(objPhysics).y - NumberHalfSize.y + 5.0f>= Earth.y + EarthHalfSize.y))
+	{
 		TransformVelocity(objTransform, -3.0f, 0.0f);
-	if (AEInputCheckCurr(VK_UP))
-		TransformVelocity(objTransform, 0.0f, 3.0f);
+		AnimationUpdate(pAnimation, dt);
+	}
+	if (GetOldTranslation(objPhysics).y - NumberHalfSize.y <= Earth.y + EarthHalfSize.y
+		&& GetOldTranslation(objPhysics).x - NumberHalfSize.x <= Earth.x + EarthHalfSize.x
+		&& GetOldTranslation(objPhysics).x + NumberHalfSize.x >= Earth.x - EarthHalfSize.x)
+	{
+		IsJumping = 0;
+		PhysicsAcceleration(objPhysics, 0.0f, 0.0f);
+		PhysicsVelocity(objPhysics, 0.0f, 0.0f);
 
+		//accidental implementation of wall climbing?
+		if (AEInputCheckCurr(VK_UP))
+		{
+			AnimationUpdate(pAnimation, dt);
+			IsJumping = 1;
+			PhysicsAcceleration(objPhysics, 0.0f, -300.0f);
+			PhysicsVelocity(objPhysics, 0.0f, 200.0f);
+			//TransformVelocity(objTransform, 0.0f, 3.0f);
+		}
+
+	}
+	else if(IsJumping == 0)
+	{
+		PhysicsAcceleration(objPhysics, 0.0f, -80.0f);
+	}
+
+
+	AEGfxSetCamPosition(GetOldTranslation(objPhysics).x, GetOldTranslation(objPhysics).y);
+	UpdateBoundingBox(BoxNumber, GetOldTranslation(objPhysics));
 	PhysicsUpdate(objPhysics, objTransform, dt);
+	SpriteDraw(pSprite2, Earth);
 	SpriteDraw(pSprite, GetOldTranslation(objPhysics));
 }
 

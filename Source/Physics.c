@@ -36,6 +36,15 @@ void PhysicsUpdate(PhysicsPtr physics, TransformPtr transform, float dt)
 
 }
 
+void PhysicsAcceleration(PhysicsPtr physics, float x_acceleration, float y_acceleration)
+{
+	if (physics)
+	{
+		physics->acceleration.x = x_acceleration;
+		physics->acceleration.y = y_acceleration;
+	}
+}
+
 PhysicsPtr CreatePhysics(AEVec2 OldTranslation, AEVec2 Acceleration, AEVec2 Velocity, float mass)
 {
 	PhysicsPtr physics = calloc(1, sizeof(Physics));
@@ -79,6 +88,14 @@ void TransformVelocity(TransformPtr transform, float x, float y)
 	}
 }
 
+void PhysicsVelocity(PhysicsPtr physics, float x, float y)
+{
+	if (physics)
+	{
+		physics->velocity.x = x;
+		physics->velocity.y = y;
+	}
+}
 AEVec2 GetOldTranslation(PhysicsPtr physics)
 {
 	AEVec2 empty = { 0 };

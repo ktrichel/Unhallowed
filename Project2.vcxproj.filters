@@ -62,6 +62,9 @@
     <ClCompile Include="Source\Physics.c">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Collision.c">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\GameStateStub.h">
@@ -114,6 +117,9 @@
       <Filter>Game\GameStates</Filter>
     </ClInclude>
     <ClInclude Include="Source\Physics.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Collision.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>

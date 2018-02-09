@@ -16,11 +16,15 @@ PhysicsPtr CreatePhysics(AEVec2 OldTranslation, AEVec2 Acceleration, AEVec2 Velo
 
 void TransformVelocity(TransformPtr transform, float x, float y);
 
+void PhysicsVelocity(PhysicsPtr physics, float x, float y);
+
 void FreePhysics(PhysicsPtr * physics);
 
 void FreeTransform(TransformPtr * transform);
 
 void PhysicsUpdate(PhysicsPtr physics, TransformPtr transform, float dt);
+
+void PhysicsAcceleration(PhysicsPtr physics, float x_acceleration, float y_acceleration);
 
 AEVec2 GetOldTranslation(PhysicsPtr physics);
 

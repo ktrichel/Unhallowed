@@ -107,7 +107,7 @@ void GameStateLevel1Update(float dt)
 		(GetOldTranslation(objPhysics).x + NumberHalfSize.x - 5.0f<= Earth.x - EarthHalfSize.x || 
 		 GetOldTranslation(objPhysics).y - NumberHalfSize.y + 5.0f>= Earth.y + EarthHalfSize.y))
 	{
-		TransformVelocity(objTransform, PlayerVelocity.x, 0.0f);
+		TransformVelocity(objTransform, 3.0f, 0.0f);
 		AnimationUpdate(pAnimation, dt);
 	}
 	if (AEInputCheckCurr(VK_LEFT) && 
@@ -135,11 +135,24 @@ void GameStateLevel1Update(float dt)
 			//TransformVelocity(objTransform, 0.0f, 3.0f);
 		}
 
+    /*
+    if (AEInputCheckCurr(VK_DOWN))
+    {
+      AnimationUpdate(pAnimation, dt);
+      PhysicsAcceleration(objPhysics, 0.0f, 300.0f);
+      PhysicsVelocity(objPhysics, 0.0f, -200.0f);
+    }
+    */
 	}
 	else if(IsJumping == 0)
 	{
 		PhysicsAcceleration(objPhysics, 0.0f, -80.0f);
 	}
+  if (GetOldTranslation(objPhysics).y < -800.0f)
+  {
+    SetTranslation(objTransform, 0.0f, 0.0f);
+    SetPhysicsTranslation(objPhysics, 0.0f, 0.0f);
+  }
 
 
 	AEGfxSetCamPosition(GetOldTranslation(objPhysics).x, GetOldTranslation(objPhysics).y);
@@ -157,6 +170,10 @@ void GameStateLevel1Shutdown()
 	AnimationFree(&pAnimation);
 	SpriteFree(&pSprite);
 	SpriteSourceFree(&pSSource);
+  FreeBoundingBox(&BoxNumber);
+  FreeBoundingBox(&BoxEarth);
+  SpriteFree(&pSprite2);
+  SpriteSourceFree(&pSSource2);
 }
 
 void GameStateLevel1Unload()
@@ -164,5 +181,6 @@ void GameStateLevel1Unload()
 	TraceMessage("Level1: Unload");
 	AEGfxTextureUnload(pTexture);
 	AEGfxMeshFree(pMesh);
-	
+  AEGfxTextureUnload(pTexture2);
+  AEGfxMeshFree(pMesh2);
 }

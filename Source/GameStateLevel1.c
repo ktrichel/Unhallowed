@@ -15,10 +15,9 @@
 #include "Trace.h"
 #include "Mesh.h"
 #include "Animation.h"
-#include "AnimationFrame.h"
-#include "AnimationSequence.h"
 #include "Sprite.h"
 #include "SpriteSource.h"
+#include "AnimationSequence.h"
 #include "Physics.h"
 #include "Collision.h"
 #include <AEEngine.h>
@@ -55,14 +54,12 @@ void GameStateLevel1Load()
 	TraceMessage("Level1: Load");
 
 	FILE *Level1file;
-	char buffer[16] = { 0 };
 
 	fopen_s(&Level1file, "Data/Level1_Lives.txt", "rt");
 
 	if (Level1file)
 	{
-		fgets(buffer, 16, Level1file);
-		numLives = atoi(buffer);
+		fscanf_s(Level1file, "%d", &numLives);
 		Position.x = 0;
 		Position.y = 0;
 		pMesh = MeshCreateQuad(50, 50, 0.25, 0.25, "Mesh4x4");
@@ -110,7 +107,7 @@ void GameStateLevel1Update(float dt)
 		(GetOldTranslation(objPhysics).x + NumberHalfSize.x - 5.0f<= Earth.x - EarthHalfSize.x || 
 		 GetOldTranslation(objPhysics).y - NumberHalfSize.y + 5.0f>= Earth.y + EarthHalfSize.y))
 	{
-		TransformVelocity(objTransform, 3.0f, 0.0f);
+		TransformVelocity(objTransform, PlayerVelocity.x, 0.0f);
 		AnimationUpdate(pAnimation, dt);
 	}
 	if (AEInputCheckCurr(VK_LEFT) && 

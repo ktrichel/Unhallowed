@@ -28,6 +28,10 @@ void PhysicsAcceleration(PhysicsPtr physics, float x_acceleration, float y_accel
 
 AEVec2 GetOldTranslation(PhysicsPtr physics);
 
+void SetPhysicsTranslation(PhysicsPtr physics, float x, float y);
+
+void SetTranslation(TransformPtr transform, float x, float y);
+
 
 
 #ifdef __cplusplus

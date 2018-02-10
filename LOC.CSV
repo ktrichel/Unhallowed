@@ -1,0 +1,19 @@
+language,filename,blank,comment,code,"github.com/AlDanial/cloc v 1.76  T=1.00 s (18.0 files/s, 1734.0 lines/s)"
+C,.\Source\GameStateLevel1.c,20,15,133
+C,.\Source\Animation.c,25,21,122
+C,.\Source\Physics.c,13,0,95
+C,.\Source\GameStateLevel2.c,20,13,87
+C,.\Source\Collision.c,10,0,82
+C,.\Source\Sprite.c,15,14,81
+C,.\Source\GameStateTable.c,22,50,68
+C,.\Source\GameStateManager.c,27,50,67
+C,.\Source\System.c,25,51,57
+C,.\Source\SpriteSource.c,10,2,51
+C,.\Source\AnimationSequence.c,10,5,51
+C,.\Source\Trace.c,19,38,31
+C,.\Source\GameStateStub.c,16,39,26
+C,.\Source\Engine.c,25,57,26
+C,.\Source\Main.c,9,20,19
+C,.\Source\Mesh.c,5,0,16
+C,.\Source\Stub.c,12,37,12
+C,.\Source\stdafx.c,3,11,1

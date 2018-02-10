@@ -107,7 +107,7 @@ void GameStateLevel1Update(float dt)
 		(GetOldTranslation(objPhysics).x + NumberHalfSize.x - 5.0f<= Earth.x - EarthHalfSize.x || 
 		 GetOldTranslation(objPhysics).y - NumberHalfSize.y + 5.0f>= Earth.y + EarthHalfSize.y))
 	{
-		TransformVelocity(objTransform, PlayerVelocity.x, 0.0f);
+		TransformVelocity(objTransform, 3.0f, 0.0f);
 		AnimationUpdate(pAnimation, dt);
 	}
 	if (AEInputCheckCurr(VK_LEFT) && 
@@ -117,9 +117,7 @@ void GameStateLevel1Update(float dt)
 		TransformVelocity(objTransform, -3.0f, 0.0f);
 		AnimationUpdate(pAnimation, dt);
 	}
-	if (GetOldTranslation(objPhysics).y - NumberHalfSize.y <= Earth.y + EarthHalfSize.y
-		&& GetOldTranslation(objPhysics).x - NumberHalfSize.x <= Earth.x + EarthHalfSize.x
-		&& GetOldTranslation(objPhysics).x + NumberHalfSize.x >= Earth.x - EarthHalfSize.x)
+	if (CollisionCheckTop(BoxNumber, BoxEarth) == 1)
 	{
 		IsJumping = 0;
 		PhysicsAcceleration(objPhysics, 0.0f, 0.0f);

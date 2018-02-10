@@ -40,3 +40,60 @@ void FreeBoundingBox(BoundingBoxPtr * box)
 	free(*box);
 	*box = NULL;
 }
+
+bool CollisionCheckTop(BoundingBoxPtr box1, BoundingBoxPtr box2)
+{
+	if (box1 && box2)
+	{
+		if (box1->Position.y - box1->HalfSize.y <= box2->Position.y + box2->HalfSize.y &&
+			box1->Position.x - box1->HalfSize.x <= box2->Position.x + box2->HalfSize.x &&
+			box1->Position.x + box1->HalfSize.x >= box2->Position.x - box2->HalfSize.x)
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+bool CollisionCheckRight(BoundingBoxPtr box1, BoundingBoxPtr box2)
+{
+	if (box1 && box2)
+	{
+		if (box1->Position.x - box1->HalfSize.x <= box2->Position.x + box2->HalfSize.x &&
+			box1->Position.y + box1->HalfSize.y >= box2->Position.y - box2->HalfSize.y &&
+			box1->Position.y - box1->HalfSize.y <= box2->Position.y + box2->HalfSize.y)
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+bool CollisionCheckDown(BoundingBoxPtr box1, BoundingBoxPtr box2)
+{
+	if (box1 && box2)
+	{
+		if (box1->Position.y + box1->HalfSize.y >= box2->Position.y - box2->HalfSize.y &&
+			box1->Position.x + box1->HalfSize.x >= box2->Position.x - box2->HalfSize.x &&
+			box1->Position.x - box1->HalfSize.x <= box2->Position.x + box2->HalfSize.x)
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+bool CollisionCheckLeft(BoundingBoxPtr box1, BoundingBoxPtr box2)
+{
+	if (box1 && box2)
+	{
+		if (box1->Position.x + box1->HalfSize.x >= box2->Position.x - box2->HalfSize.x &&
+			box1->Position.y - box1->HalfSize.y <= box2->Position.y + box2->HalfSize.y &&
+			box1->Position.y + box1->HalfSize.y >= box2->Position.y - box2->HalfSize.y)
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+

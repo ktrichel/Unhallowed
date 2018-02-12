@@ -23,8 +23,6 @@
 #include <AEEngine.h>
 #include <stdlib.h>
 
-static int numLives = 0;
-
 static AEGfxTexture * pTexture;
 static AEGfxVertexList * pMesh;
 static SpritePtr pSprite;
@@ -46,32 +44,21 @@ static AEVec2 Earth = { 0.0f, -500.0f };
 static AEVec2 Velocity = { 0.0f, 0.0f };
 static AEVec2 Acceleration = { 0.0f, -20.0f };
 static AEVec2 NumberHalfSize = { 50.0f, 50.0f };
-static AEVec2 EarthHalfSize = { 300.0f, 300.0f };
+static AEVec2 EarthHalfSize = { 300.0f, 0.0f };
+static AEVec2 TestStupid = { 0.0f, -200.0f };
 static bool IsJumping = 0;
 
 void GameStateLevel1Load()
 {
 	TraceMessage("Level1: Load");
 
-	FILE *Level1file;
-
-	fopen_s(&Level1file, "Data/Level1_Lives.txt", "rt");
-
-	if (Level1file)
-	{
-		fscanf_s(Level1file, "%d", &numLives);
 		Position.x = 0;
 		Position.y = 0;
 		pMesh = MeshCreateQuad(50, 50, 0.25, 0.25, "Mesh4x4");
 		pMesh2 = MeshCreateQuad(300, 300, 1, 1, "Mesh1x1");
 		pTexture = AEGfxTextureLoad("Assets\\Hexidecimal.png");
 		pTexture2 = AEGfxTextureLoad("Assets\\PlanetTexture.png");
-		fclose(Level1file);
-	}
-	else
-	{
-		TraceMessage("Failed to Load Level1_Lives.txt\n");
-	}
+
 }
 
 void GameStateLevel1Init()
@@ -98,21 +85,18 @@ void GameStateLevel1Init()
 	objTransform = CreateTransform();
 	BoxNumber = CreateBoundingBox(Empty, NumberHalfSize);
 	BoxEarth = CreateBoundingBox(Earth, EarthHalfSize);
+	UpdateBoundingBox(BoxEarth, TestStupid);
 }
 
 void GameStateLevel1Update(float dt)
 {
 	TraceMessage("Level1: Update");
-	if (AEInputCheckCurr(VK_RIGHT) && 
-		(GetOldTranslation(objPhysics).x + NumberHalfSize.x - 5.0f<= Earth.x - EarthHalfSize.x || 
-		 GetOldTranslation(objPhysics).y - NumberHalfSize.y + 5.0f>= Earth.y + EarthHalfSize.y))
+	if (AEInputCheckCurr(VK_RIGHT) && CollisionCheckLeft(BoxNumber, BoxEarth) == 0)
 	{
 		TransformVelocity(objTransform, 3.0f, 0.0f);
 		AnimationUpdate(pAnimation, dt);
 	}
-	if (AEInputCheckCurr(VK_LEFT) && 
-		(GetOldTranslation(objPhysics).x - NumberHalfSize.x + 5.0f>= Earth.x + EarthHalfSize.x ||
-		 GetOldTranslation(objPhysics).y - NumberHalfSize.y + 5.0f>= Earth.y + EarthHalfSize.y))
+	if (AEInputCheckCurr(VK_LEFT) && CollisionCheckRight(BoxNumber, BoxEarth) == 0)
 	{
 		TransformVelocity(objTransform, -3.0f, 0.0f);
 		AnimationUpdate(pAnimation, dt);
@@ -146,7 +130,7 @@ void GameStateLevel1Update(float dt)
 	{
 		PhysicsAcceleration(objPhysics, 0.0f, -80.0f);
 	}
-  if (GetOldTranslation(objPhysics).y < -800.0f)
+  if (GetOldTranslation(objPhysics).y < -1500.0f)
   {
     SetTranslation(objTransform, 0.0f, 0.0f);
     SetPhysicsTranslation(objPhysics, 0.0f, 0.0f);

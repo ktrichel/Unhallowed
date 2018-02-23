@@ -12,6 +12,8 @@ extern "C" {
 
 	AEVec2 GetHalfSize(BoundingBoxPtr box);
 
+	bool CollisionCheck(BoundingBoxPtr box1, BoundingBoxPtr box2);
+
 	bool CollisionCheckTop(BoundingBoxPtr box1, BoundingBoxPtr box2);
 
 	bool CollisionCheckRight(BoundingBoxPtr box1, BoundingBoxPtr box2);

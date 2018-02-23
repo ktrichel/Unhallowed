@@ -77,18 +77,17 @@ void GameStateManagerUpdate(float dt)
 		// TODO: Implement code to properly handle unloading the current game state.
 		if (GameStateManagerIsRestarting(gameState.next))
 			gameState.next = gameState.current;
-		else
-		{
-			// Unload the previous game state
-			GameStateExecuteUnload(gameState.current);
 
-			// Update the recorded states.
-			gameState.previous = gameState.current;
-			gameState.current = gameState.next;
+		// Unload the previous game state
+		GameStateExecuteUnload(gameState.current);
 
-			// TODO: Implement code to properly handle loading the new game state.
-			GameStateExecuteLoad(gameState.current);
-		}
+		// Update the recorded states.
+		gameState.previous = gameState.current;
+		gameState.current = gameState.next;
+
+		// TODO: Implement code to properly handle loading the new game state.
+		GameStateExecuteLoad(gameState.current);
+
 		// Initialize the new game state.
 		GameStateExecuteInit(gameState.current);
 	}

@@ -30,7 +30,7 @@ void PhysicsUpdate(PhysicsPtr physics, TransformPtr transform, float dt)
 		physics->velocity.y += physics->acceleration.y * dt;
 		physics->oldTranslation.x += physics->velocity.x * dt;
 		physics->oldTranslation.y += physics->velocity.y * dt;
-    AEGfxSetCamPosition(transform->translation.x, transform->translation.y);
+        AEGfxSetCamPosition(transform->translation.x, transform->translation.y);
 		transform->translation = physics->oldTranslation;
 	}
 
@@ -45,6 +45,9 @@ void PhysicsAcceleration(PhysicsPtr physics, float x_acceleration, float y_accel
 	}
 }
 
+// previous implementation of create physics, you can use setters instead but I'm leaving the code
+// here so it can run before I continue cleaning things up
+// !!! DO NOT CALL THIS !!!
 PhysicsPtr CreatePhysics(AEVec2 OldTranslation, AEVec2 Acceleration, AEVec2 Velocity, float mass)
 {
 	PhysicsPtr physics = calloc(1, sizeof(Physics));
@@ -55,6 +58,42 @@ PhysicsPtr CreatePhysics(AEVec2 OldTranslation, AEVec2 Acceleration, AEVec2 Velo
 		physics->velocity = Velocity;
 		physics->inverseMass = 1.0f / mass;
 		return physics;
+	}
+	return NULL;
+}
+
+
+// Dynamically allocate a new physics component.
+// (Hint: Use calloc() to ensure that all member variables are initialized to 0.)
+PhysicsPtr PhysicsCreate(void)
+{
+	PhysicsPtr physics = calloc(1, sizeof(Physics));
+	if (physics)
+	{
+		return physics;
+	}
+	return NULL;
+}
+
+// Dynamically allocate a new transform object.
+// (Hint: Use calloc() to ensure that all member variables are initialized to 0.)
+// (Hint: Failing to initialize the scale values to non-zero values will result in invisible sprites.)
+// Params:
+//	 x = Initial world position on the x-axis.
+//	 y = Initial world position on the y-axis.
+// Returns:
+//	 If the memory allocation was successful,
+//	   then return a pointer to the allocated memory,
+//	   else return NULL.
+TransformPtr TransformCreate(float x, float y)
+{
+	TransformPtr transform = calloc(1, sizeof(Transform));
+
+	if (transform)
+	{
+		transform->translation.x = x;
+		transform->translation.y = y;
+		return transform;
 	}
 	return NULL;
 }
@@ -123,4 +162,20 @@ void SetTranslation(TransformPtr transform, float x, float y)
     transform->translation.x = x;
     transform->translation.y = y;
   }
+}
+
+void TransformSetScale(TransformPtr transform, AEVec2 scale)
+{
+	if (transform)
+	{
+		transform->scale = scale;
+	}
+}
+
+void TransformSetRotation(TransformPtr transform, float rotation)
+{
+	if (transform)
+	{
+		transform->rotation = rotation;
+	}
 }

@@ -12,6 +12,8 @@ typedef struct Physics * PhysicsPtr;
 
 TransformPtr CreateTransform(void);
 
+TransformPtr TransformCreate(float x, float y);
+
 PhysicsPtr CreatePhysics(AEVec2 OldTranslation, AEVec2 Acceleration, AEVec2 Velocity, float mass);
 
 void TransformVelocity(TransformPtr transform, float x, float y);
@@ -31,6 +33,12 @@ AEVec2 GetOldTranslation(PhysicsPtr physics);
 void SetPhysicsTranslation(PhysicsPtr physics, float x, float y);
 
 void SetTranslation(TransformPtr transform, float x, float y);
+
+void TransformSetScale(TransformPtr transform, AEVec2 scale);
+
+void TransformSetRotation(TransformPtr transform, float rotation);
+
+PhysicsPtr PhysicsCreate(void);
 
 
 

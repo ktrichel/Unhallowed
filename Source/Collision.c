@@ -41,6 +41,20 @@ void FreeBoundingBox(BoundingBoxPtr * box)
 	*box = NULL;
 }
 
+bool CollisionCheck(BoundingBoxPtr box1, BoundingBoxPtr box2)
+{
+	if (CollisionCheckTop(box1, box2))
+		return 1;
+	if (CollisionCheckRight(box1, box2))
+		return 1;
+	if (CollisionCheckDown(box1, box2))
+		return 1;
+	if (CollisionCheckLeft(box1, box2))
+		return 1;
+
+	return 0;
+}
+
 bool CollisionCheckTop(BoundingBoxPtr box1, BoundingBoxPtr box2)
 {
 	if (box1 && box2)

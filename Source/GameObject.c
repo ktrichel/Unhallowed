@@ -46,10 +46,6 @@ void GameObjectFree(GameObjectPtr * gameObject)
 {
 	if (gameObject && *gameObject)
 	{
-		AnimationFree(GameObjectGetAnimation(gameObject));
-		FreePhysics(GameObjectGetPhysics(gameObject));
-		SpriteFree(GameObjectGetSprite(gameObject));
-		FreeTransform(GameObjectGetTransform(gameObject));
 		free(*gameObject);
 		*gameObject = NULL;
 	}

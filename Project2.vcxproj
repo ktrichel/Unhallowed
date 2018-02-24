@@ -15,6 +15,7 @@
     <ClInclude Include="Source\AnimationFrame.h" />
     <ClInclude Include="Source\AnimationSequence.h" />
     <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Combat.h" />
     <ClInclude Include="Source\Engine.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\GameStateLevel1.h" />
@@ -22,6 +23,7 @@
     <ClInclude Include="Source\GameStateManager.h" />
     <ClInclude Include="Source\GameStateStub.h" />
     <ClInclude Include="Source\GameStateTable.h" />
+    <ClInclude Include="Source\Matrix2D.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\Physics.h" />
     <ClInclude Include="Source\Sprite.h" />
@@ -31,11 +33,13 @@
     <ClInclude Include="Source\System.h" />
     <ClInclude Include="Source\targetver.h" />
     <ClInclude Include="Source\Trace.h" />
+    <ClInclude Include="Source\Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Animation.c" />
     <ClCompile Include="Source\AnimationSequence.c" />
     <ClCompile Include="Source\Collision.c" />
+    <ClCompile Include="Source\Combat.c" />
     <ClCompile Include="Source\Engine.c" />
     <ClCompile Include="Source\GameObject.c" />
     <ClCompile Include="Source\GameStateLevel1.c" />
@@ -47,6 +51,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Matrix2D.c" />
     <ClCompile Include="Source\Mesh.c" />
     <ClCompile Include="Source\Physics.c" />
     <ClCompile Include="Source\Sprite.c" />
@@ -55,6 +60,7 @@
     <ClCompile Include="Source\Stub.c" />
     <ClCompile Include="Source\System.c" />
     <ClCompile Include="Source\Trace.c" />
+    <ClCompile Include="Source\Vector2D.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{71A03382-4E92-4D93-A8D2-58B289C3D484}</ProjectGuid>

@@ -52,7 +52,7 @@ static BoundingBoxPtr BoxNumber;
 static AEVec2 Empty = { 0 };
 static AEVec2 EarthPos = { 0.0f, -500.0f };
 static AEVec2 Velocity = { 0.0f, 0.0f };
-static AEVec2 Acceleration = { 0.0f, -20.0f };
+static AEVec2 Acceleration = { 0.0f, 0.0f };
 static AEVec2 PlayerHalfSize = { 50.0f, 50.0f };
 static AEVec2 EarthHalfSize = { 300.0f, 300.0f };
 static AEVec2 ShotHalfSize = { 25.0f,25.0f };
@@ -92,7 +92,7 @@ static GameObjectPtr GameStateLevel2CreateCharacter(void)
 	GameObjectSetAnimation(gObject, AnimationCreate(CharacterSprite));
 	AnimationPlay(GameObjectGetAnimation(gObject), 3, 0.25, true);
 	GameObjectSetPhysics(gObject, PhysicsCreate());
-	PhysicsAcceleration(GameObjectGetPhysics(gObject), 0.0f, -20.0f);
+	PhysicsAcceleration(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
 	PhysicsVelocity(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
 	GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, PlayerHalfSize));
 
@@ -137,7 +137,7 @@ static GameObjectPtr GameStateLevel2CreateShot(void)
 	GameObjectSetPhysics(gObject, PhysicsCreate());
 	PhysicsAcceleration(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
 	PhysicsVelocity(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
-	SetPhysicsTranslation(GameObjectGetPhysics(gObject), GetOldTranslation(GameObjectGetPhysics(Character)).x, GetOldTranslation(GameObjectGetPhysics(Character)).y);
+	SetPhysicsTranslation(GameObjectGetPhysics(gObject), GetOldTranslation(GameObjectGetPhysics(Character)));
 	SetTranslation(GameObjectGetTransform(gObject), GetOldTranslation(GameObjectGetPhysics(gObject)).x, GetOldTranslation(GameObjectGetPhysics(gObject)).y);
 	GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, ShotHalfSize));
 
@@ -181,9 +181,6 @@ void GameStateLevel1Init()
 void GameStateLevel1Update(float dt)
 {
 	TraceMessage("Level1: Update");
-<<<<<<< HEAD
-
-=======
 	if (AEInputCheckCurr(0x31))
 	{
 		GameStateManagerSetNextState(GsRestart);
@@ -206,7 +203,6 @@ void GameStateLevel1Update(float dt)
 		TransformVelocity(GameObjectGetTransform(Character), -3.0f, 0.0f);
 		AnimationUpdate(GameObjectGetAnimation(Character), dt);
 	}
->>>>>>> 74dd888c384e39658694aa950ce1e2f4231a95f7
 	if (CollisionCheckTop(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 1)
 	{
 		IsJumping = 0;
@@ -237,7 +233,7 @@ void GameStateLevel1Update(float dt)
 	}
 	else if (IsJumping == 0)
 	{
-		PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, -80.0f);
+		PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, 0.0f);
 	}
 
 	TraceMessage("Level1: Update");

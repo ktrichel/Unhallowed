@@ -68,6 +68,15 @@
     <ClCompile Include="Source\GameObject.c">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Combat.c">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Matrix2D.c">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Vector2D.c">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\GameStateStub.h">
@@ -126,6 +135,15 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObject.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Combat.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Matrix2D.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vector2D.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>

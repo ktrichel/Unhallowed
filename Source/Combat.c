@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 //
 // File Name:	Combat.c
-// Author(s):	Drake Mathis (login ID)
+// Author(s):	Doug Schilling (dschilling)
 // Project:		MyGame
 // Course:		CS230S17
 //

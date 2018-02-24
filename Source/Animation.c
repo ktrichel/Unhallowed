@@ -3,13 +3,7 @@
 #include "AnimationFrame.h"
 #include <AEEngine.h>
 
-//------------------------------------------------------------------------------
-// Private Consts:
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Private Structures:
-//------------------------------------------------------------------------------
+static void AnimationAdvanceFrame(AnimationPtr animation);
 
 // You are free to change the contents of this structure as long as you do not
 //   change the public interface declared in the header.
@@ -45,24 +39,6 @@ typedef struct Animation
 	AnimationSequencePtr	sequence;
 
 } Animation;
-
-//------------------------------------------------------------------------------
-// Public Variables:
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Private Variables:
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Private Function Declarations:
-//------------------------------------------------------------------------------
-
-static void AnimationAdvanceFrame(AnimationPtr animation);
-
-//------------------------------------------------------------------------------
-// Public Functions:
-//------------------------------------------------------------------------------
 
 AnimationPtr AnimationCreate(SpritePtr sprite)
 {
@@ -143,17 +119,6 @@ void AnimationUpdate(AnimationPtr animation, float dt)
 	}
 }
 
-bool AnimationIsDone(AnimationPtr animation) 
-{
-	if (animation && animation->isDone)
-		return true;
-	return false;
-}
-
-//------------------------------------------------------------------------------
-// Private Functions:
-//------------------------------------------------------------------------------
-
 static void AnimationAdvanceFrame(AnimationPtr animation)
 {
 	if (animation)
@@ -186,11 +151,18 @@ static void AnimationAdvanceFrame(AnimationPtr animation)
 			}
 			animation->frameDelay += animation->frameDuration;
 		}
-		else
+		else 
 		{
 			animation->frameDelay = 0;
 		}
 
 	}
 	return;
+}
+
+bool AnimationIsDone(AnimationPtr animation) 
+{
+	if (animation && animation->isDone)
+		return true;
+	return false;
 }

@@ -10,19 +10,7 @@
     <Filter Include="Game\GameStates">
       <UniqueIdentifier>{0fc2ef2e-d98c-4889-a1c2-72ec1c09f16d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Math">
-      <UniqueIdentifier>{29bd56ab-6e68-4e0e-81b7-f0995723a628}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\GameObjects">
-      <UniqueIdentifier>{c4739de4-eb5c-45cd-b7f4-479effadb17a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\GameObjects\Physics">
-      <UniqueIdentifier>{892b6a25-f9ad-4441-bbb6-a2437b22a291}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\GameObjects\Transform">
-      <UniqueIdentifier>{72d14301-4367-4247-bd6b-c014873020ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\GameObjects\Graphics">
+    <Filter Include="Engine\Graphics">
       <UniqueIdentifier>{b4f05833-7b58-4457-94c2-d951b07921d6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -57,37 +45,37 @@
       <Filter>Game\GameStates</Filter>
     </ClCompile>
     <ClCompile Include="Source\Animation.c">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\AnimationSequence.c">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Mesh.c">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Sprite.c">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\SpriteSource.c">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Physics.c">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Collision.c">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObject.c">
+      <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Source\Combat.c">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Collision.c">
-      <Filter>Engine\GameObjects\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Physics.c">
-      <Filter>Engine\GameObjects\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Matrix2D.c">
-      <Filter>Engine\Math</Filter>
+      <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Source\Vector2D.c">
-      <Filter>Engine\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameObject.c">
-      <Filter>Engine\GameObjects</Filter>
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,22 +105,22 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Source\AnimationFrame.h">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\AnimationSequence.h">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Animation.h">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Sprite.h">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\SpriteSource.h">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Mesh.h">
-      <Filter>Engine\GameObjects\Graphics</Filter>
+      <Filter>Engine\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameStateLevel1.h">
       <Filter>Game\GameStates</Filter>
@@ -140,23 +128,23 @@
     <ClInclude Include="Source\GameStateLevel2.h">
       <Filter>Game\GameStates</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Combat.h">
+    <ClInclude Include="Source\Physics.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Source\Collision.h">
-      <Filter>Engine\GameObjects\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Physics.h">
-      <Filter>Engine\GameObjects\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Matrix2D.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Vector2D.h">
-      <Filter>Engine\Math</Filter>
+      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObject.h">
-      <Filter>Engine\GameObjects</Filter>
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Combat.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Matrix2D.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vector2D.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

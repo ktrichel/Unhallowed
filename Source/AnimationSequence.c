@@ -2,14 +2,6 @@
 #include "AnimationSequence.h"
 #include <AEEngine.h>
 
-//------------------------------------------------------------------------------
-// Private Consts:
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Private Structures:
-//------------------------------------------------------------------------------
-
 // You are free to change the contents of this structure as long as you do not
 //   change the public interface declared in the header.
 typedef struct AnimationSequence
@@ -24,22 +16,6 @@ typedef struct AnimationSequence
 	bool isLooping;
 
 } AnimationSequence;
-
-//------------------------------------------------------------------------------
-// Public Variables:
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Private Variables:
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Private Function Declarations:
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Public Functions:
-//------------------------------------------------------------------------------
 
 AnimationSequencePtr AnimationSequenceCreate(unsigned int frameCount, AnimationFramePtr frameList, bool isLooping)
 {
@@ -88,7 +64,3 @@ bool AnimationSequenceIsLooping(AnimationSequencePtr sequence)
 		return true;
 	return false;
 }
-
-//------------------------------------------------------------------------------
-// Private Functions:
-//------------------------------------------------------------------------------

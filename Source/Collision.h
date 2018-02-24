@@ -1,59 +1,35 @@
+
 #pragma once
-
-//------------------------------------------------------------------------------
-// Include Files:
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
 
 #ifdef __cplusplus
 extern "C" {
 	/* Assume C declarations for C++ */
 #endif
+	typedef struct AEVec2 AEVec2;
+	typedef struct BoundingBox * BoundingBoxPtr;
 
-//------------------------------------------------------------------------------
-// Forward References:
-//------------------------------------------------------------------------------
+	BoundingBoxPtr CreateBoundingBox(AEVec2 position, AEVec2 halfsize);
 
-typedef struct AEVec2 AEVec2;
-typedef struct BoundingBox * BoundingBoxPtr;
+	AEVec2 GetHalfSize(BoundingBoxPtr box);
 
-//------------------------------------------------------------------------------
-// Public Consts:
-//------------------------------------------------------------------------------
+	bool CollisionCheck(BoundingBoxPtr box1, BoundingBoxPtr box2);
 
-//------------------------------------------------------------------------------
-// Public Structures:
-//------------------------------------------------------------------------------
+	bool CollisionCheckTop(BoundingBoxPtr box1, BoundingBoxPtr box2);
 
-//------------------------------------------------------------------------------
-// Public Variables:
-//------------------------------------------------------------------------------
+	bool CollisionCheckRight(BoundingBoxPtr box1, BoundingBoxPtr box2);
 
-//------------------------------------------------------------------------------
-// Public Functions:
-//------------------------------------------------------------------------------
+	bool CollisionCheckDown(BoundingBoxPtr box1, BoundingBoxPtr box2);
 
-BoundingBoxPtr CreateBoundingBox(AEVec2 position, AEVec2 halfsize);
+	bool CollisionCheckLeft(BoundingBoxPtr box1, BoundingBoxPtr box2);
 
-AEVec2 GetHalfSize(BoundingBoxPtr box);
+	void UpdateBoundingBox(BoundingBoxPtr box, AEVec2 position);
 
-bool CollisionCheck(BoundingBoxPtr box1, BoundingBoxPtr box2);
+	void FreeBoundingBox(BoundingBoxPtr * box);
 
-bool CollisionCheckTop(BoundingBoxPtr box1, BoundingBoxPtr box2);
-
-bool CollisionCheckRight(BoundingBoxPtr box1, BoundingBoxPtr box2);
-
-bool CollisionCheckDown(BoundingBoxPtr box1, BoundingBoxPtr box2);
-
-bool CollisionCheckLeft(BoundingBoxPtr box1, BoundingBoxPtr box2);
-
-void UpdateBoundingBox(BoundingBoxPtr box, AEVec2 position);
-
-void FreeBoundingBox(BoundingBoxPtr * box);
-
-//------------------------------------------------------------------------------
 
 #ifdef __cplusplus
 }                       /* End of extern "C" { */
 #endif
+
+
+

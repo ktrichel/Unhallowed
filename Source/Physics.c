@@ -146,12 +146,12 @@ AEVec2 GetOldTranslation(PhysicsPtr physics)
 	return empty;
 }
 
-void SetPhysicsTranslation(PhysicsPtr physics, float x, float y)
+void SetPhysicsTranslation(PhysicsPtr physics, AEVec2 translation)
 {
   if (physics)
   {
-    physics->oldTranslation.x = x;
-    physics->oldTranslation.y = y;
+    physics->oldTranslation.x = translation.x;
+    physics->oldTranslation.y = translation.y;
   }
 }
 

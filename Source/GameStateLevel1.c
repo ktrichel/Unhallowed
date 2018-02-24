@@ -21,6 +21,8 @@
 #include "Physics.h"
 #include "Collision.h"
 #include "GameObject.h"
+#include "Vector2D.h"
+#include "Matrix2D.h"
 #include <AEEngine.h>
 #include <stdlib.h>
 
@@ -50,6 +52,7 @@ static AEVec2 NumberHalfSize = { 50.0f, 50.0f };
 static AEVec2 EarthHalfSize = { 300.0f, 300.0f };
 static AEVec2 TestStupid = { 0.0f, -200.0f };
 static bool IsJumping = 0;
+static AEVec2 Result = { 0 };
 
 
 void GameStateLevel1Load()
@@ -104,7 +107,7 @@ static GameObjectPtr GameStateLevel2CreateEarth(void)
 	GameObjectSetPhysics(gObject, PhysicsCreate());
 	PhysicsAcceleration(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
 	PhysicsVelocity(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
-	SetPhysicsTranslation(GameObjectGetPhysics(gObject), 0.0f, -500.0f);
+	SetPhysicsTranslation(GameObjectGetPhysics(gObject), EarthPos);
 	GameObjectSetBoundingBox(gObject, CreateBoundingBox(EarthPos, EarthHalfSize));
 
 	return gObject;
@@ -149,6 +152,41 @@ void GameStateLevel1Init()
 void GameStateLevel1Update(float dt)
 {
 	TraceMessage("Level1: Update");
+
+	if (CollisionCheckTop(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 1)
+	{
+		IsJumping = 0;
+		PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, 0.0f);
+		PhysicsVelocity(GameObjectGetPhysics(Character), 0.0f, 0.0f);
+		Result = GetOldTranslation(GameObjectGetPhysics(Earth));
+		Vector2DAdd(&Result, &Result, &EarthHalfSize);
+		UpdateBoundingBox(GameObjectGetBoundingBox(Character), Result);
+		//SetPhysicsTranslation(GameObjectGetPhysics(Character), Result);
+
+		if (AEInputCheckCurr(VK_UP))
+		{
+			AnimationUpdate(GameObjectGetAnimation(Character), dt);
+			IsJumping = 1;
+			PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, -300.0f);
+			PhysicsVelocity(GameObjectGetPhysics(Character), 0.0f, 200.0f);
+			//TransformVelocity(objTransform, 0.0f, 3.0f);
+		}
+
+		/*
+		if (AEInputCheckCurr(VK_DOWN))
+		{
+		AnimationUpdate(pAnimation, dt);
+		PhysicsAcceleration(objPhysics, 0.0f, 300.0f);
+		PhysicsVelocity(objPhysics, 0.0f, -200.0f);
+		}
+		*/
+	}
+	else if (IsJumping == 0)
+	{
+		PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, -80.0f);
+	}
+
+	TraceMessage("Level1: Update");
 	if (AEInputCheckCurr(VK_RIGHT) && 
 		CollisionCheckLeft(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 0)
 	{
@@ -161,40 +199,12 @@ void GameStateLevel1Update(float dt)
 		TransformVelocity(GameObjectGetTransform(Character), -3.0f, 0.0f);
 		AnimationUpdate(GameObjectGetAnimation(Character), dt);
 	}
-	if (CollisionCheckTop(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 1)
-	{
-		IsJumping = 0;
-		PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, 0.0f);
-		PhysicsVelocity(GameObjectGetPhysics(Character), 0.0f, 0.0f);
-
-		//accidental implementation of wall climbing?
-		if (AEInputCheckCurr(VK_UP))
-		{
-			AnimationUpdate(GameObjectGetAnimation(Character), dt);
-			IsJumping = 1;
-			PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, -300.0f);
-			PhysicsVelocity(GameObjectGetPhysics(Character), 0.0f, 200.0f);
-			//TransformVelocity(objTransform, 0.0f, 3.0f);
-		}
-
-    /*
-    if (AEInputCheckCurr(VK_DOWN))
-    {
-      AnimationUpdate(pAnimation, dt);
-      PhysicsAcceleration(objPhysics, 0.0f, 300.0f);
-      PhysicsVelocity(objPhysics, 0.0f, -200.0f);
-    }
-    */
-	}
-	else if(IsJumping == 0)
-	{
-		PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, -80.0f);
-	}
+	
 
 	 if (GetOldTranslation(GameObjectGetPhysics(Character)).y < -1500.0f)
 	{
 	 SetTranslation(GameObjectGetTransform(Character), 0.0f, 0.0f);
-	 SetPhysicsTranslation(GameObjectGetPhysics(Character), 0.0f, 0.0f);
+	 SetPhysicsTranslation(GameObjectGetPhysics(Character), Empty);
 	}
 
 	AEGfxSetCamPosition(GetOldTranslation(GameObjectGetPhysics(Character)).x, GetOldTranslation(GameObjectGetPhysics(Character)).y);

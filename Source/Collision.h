@@ -22,6 +22,7 @@ extern "C" {
 
 	bool CollisionCheckLeft(BoundingBoxPtr box1, BoundingBoxPtr box2);
 
+	// updates the position of the bounding box
 	void UpdateBoundingBox(BoundingBoxPtr box, AEVec2 position);
 
 	void FreeBoundingBox(BoundingBoxPtr * box);

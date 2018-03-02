@@ -58,4 +58,3 @@ void StubShutdown();
 #ifdef __cplusplus
 }                       /* End of extern "C" { */
 #endif
-

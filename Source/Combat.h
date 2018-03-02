@@ -1,3 +1,14 @@
+//------------------------------------------------------------------------------
+//
+// File Name:	Combat.h
+// Author(s):	Drake Mathis (login ID)
+// Project:		MyGame
+// Course:		CS230S17
+//
+// Copyright © 2017 DigiPen (USA) Corporation.
+//
+//------------------------------------------------------------------------------
+
 #pragma once
 
 //------------------------------------------------------------------------------
@@ -14,10 +25,7 @@ extern "C" {
 //------------------------------------------------------------------------------
 // Forward References:
 //------------------------------------------------------------------------------
-
-typedef struct AEVec2 AEVec2;
-typedef struct Transform * TransformPtr;
-typedef struct Physics * PhysicsPtr;
+typedef struct Combat * CombatPtr;
 
 //------------------------------------------------------------------------------
 // Public Consts:
@@ -34,44 +42,38 @@ typedef struct Physics * PhysicsPtr;
 //------------------------------------------------------------------------------
 // Public Functions:
 //------------------------------------------------------------------------------
+CombatPtr CombatCreate(void);
 
-TransformPtr CreateTransform(void);
+void CombatFree(CombatPtr combat);
 
-TransformPtr TransformCreate(float x, float y);
+void CombatUpdate(CombatPtr enemyAttacks, CombatPtr playerAttacks, GameObjectPtr enemies, GameObjectPtr character);
 
-PhysicsPtr CreatePhysics(AEVec2 OldTranslation, AEVec2 Acceleration, AEVec2 Velocity, float mass);
+void EnemyResolution(GameObjectPtr enemies, CombatPtr playerAttack, int length);
 
-void TransformVelocity(TransformPtr transform, float x, float y);
+void PlayerResolution(GameObjectPtr character, CombatPtr enemyAttacks);
 
-void PhysicsVelocity(PhysicsPtr physics, float x, float y);
+void DisplaceObjectRight(GameObjectPtr gameObject);
 
-void FreePhysics(PhysicsPtr * physics);
-
-void FreeTransform(TransformPtr * transform);
-
-void PhysicsUpdate(PhysicsPtr physics, TransformPtr transform, float dt);
-
-void PhysicsAcceleration(PhysicsPtr physics, float x_acceleration, float y_acceleration);
-
-AEVec2 GetOldTranslation(PhysicsPtr physics);
-
-void SetPhysicsTranslation(PhysicsPtr physics, AEVec2 translation);
-
-void SetTranslation(TransformPtr transform, float x, float y);
-
-void TransformSetScale(TransformPtr transform, AEVec2 scale);
-
-void TransformSetRotation(TransformPtr transform, float rotation);
-
-PhysicsPtr PhysicsCreate(void);
-
-
-void TransformSetRotation(TransformPtr transform, float rotation);
-
-PhysicsPtr PhysicsCreate(void);
+void DisplaceObjectLeft(GameObjectPtr gameObject);
 
 //------------------------------------------------------------------------------
 
 #ifdef __cplusplus
 }                       /* End of extern "C" { */
 #endif
+
+
+
+/*
+	projectile :			check collision and destroy on collision
+							health reduction
+							knockback (if projectile hits target move target away from collision)
+
+	
+	Hitbox :				struct(?)
+							TransformPtr (Rotatation) (knockback)
+							Damage
+							SpritePtr
+
+	Damage Resolution :		
+*/

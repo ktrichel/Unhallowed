@@ -26,6 +26,22 @@
 #include <AEEngine.h>
 #include <stdlib.h>
 
+//------------------------------------------------------------------------------
+// Private Consts:
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Private Structures:
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Public Variables:
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Private Variables:
+//------------------------------------------------------------------------------
+
 static AEGfxTexture * pTexture;
 static AEGfxVertexList * pMesh;
 static SpritePtr pSprite;
@@ -34,10 +50,15 @@ static AEGfxTexture * pTexture2;
 static AEGfxVertexList * pMesh2;
 static SpritePtr pSprite2;
 static SpriteSourcePtr pSSource2;
+static AEGfxTexture * pTexture3;
+static AEGfxVertexList * pMesh3;
+static SpritePtr pSprite3;
+static SpriteSourcePtr pSSource3;
 static AnimationPtr pAnimation;
 static AEVec2 Position;
 static GameObjectPtr Character;
 static GameObjectPtr Earth;
+static GameObjectPtr Shot;
 
 static SpritePtr pSprite3;
 static SpriteSourcePtr pSSource3;
@@ -54,13 +75,25 @@ static BoundingBoxPtr Test;
 static AEVec2 Empty = { 0 };
 static AEVec2 EarthPos = { 0.0f, -500.0f };
 static AEVec2 Velocity = { 0.0f, 0.0f };
-static AEVec2 Acceleration = { -20.0f, -20.0f };
-static AEVec2 NumberHalfSize = { 50.0f, 50.0f };
+static AEVec2 Acceleration = { 0.0f, 0.0f };
+static AEVec2 PlayerHalfSize = { 50.0f, 50.0f };
 static AEVec2 EarthHalfSize = { 300.0f, 300.0f };
+static AEVec2 ShotHalfSize = { 25.0f,25.0f };
 static AEVec2 TestStupid = { 0.0f, -200.0f };
 static bool IsJumping = 0;
 static AEVec2 Result = { 0 };
 
+//------------------------------------------------------------------------------
+// Private Function Declarations:
+//------------------------------------------------------------------------------
+
+static GameObjectPtr GameStateLevel2CreateCharacter(void);
+static GameObjectPtr GameStateLevel2CreateEarth(void);
+static GameObjectPtr GameStateLevel2CreateShot(void);
+
+//------------------------------------------------------------------------------
+// Public Functions:
+//------------------------------------------------------------------------------
 
 void GameStateLevel1Load()
 {
@@ -68,11 +101,13 @@ void GameStateLevel1Load()
 
 	pMesh = MeshCreateQuad(50, 50, 0.25, 0.25, "Mesh4x4");
 	pMesh2 = MeshCreateQuad(300, 300, 1, 1, "Mesh1x1");
+	pMesh3 = MeshCreateQuad(50, 25, .5, .25, "Mesh1x1");
 	pTexture = AEGfxTextureLoad("Assets\\Hexidecimal.png");
 	pTexture2 = AEGfxTextureLoad("Assets\\PlanetTexture.png");
+	pTexture3 = AEGfxTextureLoad("Assets\\runningcat.png");
 	pSSource = SpriteSourceCreate(4, 4, pTexture);
 	pSSource2 = SpriteSourceCreate(1, 1, pTexture2);
-
+	pSSource3 = SpriteSourceCreate(1, 1, pTexture3);
 }
 
 
@@ -159,7 +194,28 @@ void GameStateLevel1Init()
 void GameStateLevel1Update(float dt)
 {
 	TraceMessage("Level1: Update");
+	if (AEInputCheckCurr(0x31))
+	{
+		GameStateManagerSetNextState(GsRestart);
+	}
+	if (AEInputCheckCurr(VK_SPACE))
+	{
+		Shot = GameStateLevel2CreateShot();
+		PhysicsVelocity(GameObjectGetPhysics(Shot), 500.0f, 0.0f);
+	}
 
+	if (AEInputCheckCurr(VK_RIGHT) && 
+		CollisionCheckLeft(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 0)
+	{
+		TransformVelocity(GameObjectGetTransform(Character), 3.0f, 0.0f);
+		AnimationUpdate(GameObjectGetAnimation(Character), dt);
+	}
+	if (AEInputCheckCurr(VK_LEFT) && 
+		CollisionCheckRight(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 0)
+	{
+		TransformVelocity(GameObjectGetTransform(Character), -3.0f, 0.0f);
+		AnimationUpdate(GameObjectGetAnimation(Character), dt);
+	}
 	if (CollisionCheckTop(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 1)
 	{
 		IsJumping = 0;
@@ -167,7 +223,6 @@ void GameStateLevel1Update(float dt)
 		PhysicsVelocity(GameObjectGetPhysics(Character), 0.0f, 0.0f);
 		Result = GetOldTranslation(GameObjectGetPhysics(Earth));
 		Vector2DAdd(&Result, &Result, &EarthHalfSize);
-		Vector2DNeg(&Result, &Result);
 		UpdateBoundingBox(GameObjectGetBoundingBox(Character), Result);
 		//SetPhysicsTranslation(GameObjectGetPhysics(Character), Result);
 
@@ -191,7 +246,7 @@ void GameStateLevel1Update(float dt)
 	}
 	else if (IsJumping == 0)
 	{
-		PhysicsAcceleration(GameObjectGetPhysics(Character), 9.0f, -80.0f);
+		PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, 0.0f);
 	}
 
 	TraceMessage("Level1: Update");
@@ -215,10 +270,13 @@ void GameStateLevel1Update(float dt)
 	 SetPhysicsTranslation(GameObjectGetPhysics(Character), Empty);
 	}
 
+
+	PhysicsUpdate(GameObjectGetPhysics(Shot), GameObjectGetTransform(Shot), dt);
 	AEGfxSetCamPosition(GetOldTranslation(GameObjectGetPhysics(Character)).x, GetOldTranslation(GameObjectGetPhysics(Character)).y);
 	UpdateBoundingBox(GameObjectGetBoundingBox(Character), GetOldTranslation(GameObjectGetPhysics(Character)));
 	PhysicsUpdate(GameObjectGetPhysics(Character), GameObjectGetTransform(Character), dt);
 	GameObjectDraw(Earth);
+	GameObjectDraw(Shot);
 	GameObjectDraw(Character);
 }
 
@@ -227,8 +285,10 @@ void GameStateLevel1Shutdown()
 	TraceMessage("Level1: Shutdown");
 	SpriteSourceFree(&pSSource);
 	SpriteSourceFree(&pSSource2);
+	SpriteSourceFree(&pSSource3);
 	GameObjectFree(&Character);
 	GameObjectFree(&Earth);
+	GameObjectFree(&Shot);
 }
 
 void GameStateLevel1Unload()
@@ -238,4 +298,78 @@ void GameStateLevel1Unload()
 	AEGfxMeshFree(pMesh);
 	AEGfxTextureUnload(pTexture2);
 	AEGfxMeshFree(pMesh2);
+	AEGfxTextureUnload(pTexture3);
+	AEGfxMeshFree(pMesh3);
+}
+
+
+//------------------------------------------------------------------------------
+// Private Functions:
+//------------------------------------------------------------------------------
+
+static GameObjectPtr GameStateLevel2CreateCharacter(void)
+{
+	const AEVec2 Scale = { 300.0f, 300.0f };
+
+	GameObjectPtr gObject = GameObjectCreate("Character");
+	GameObjectSetTransform(gObject, CreateTransform());
+	TransformSetScale(GameObjectGetTransform(gObject), Scale);
+	TransformSetRotation(GameObjectGetTransform(gObject), 0);
+	SpritePtr CharacterSprite = SpriteCreate("Character Sprite");
+	SpriteSetMesh(CharacterSprite, pMesh);
+	SpriteSetSpriteSource(CharacterSprite, pSSource);
+	GameObjectSetSprite(gObject, CharacterSprite);
+	GameObjectSetAnimation(gObject, AnimationCreate(CharacterSprite));
+	AnimationPlay(GameObjectGetAnimation(gObject), 3, 0.25, true);
+	GameObjectSetPhysics(gObject, PhysicsCreate());
+	PhysicsAcceleration(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
+	PhysicsVelocity(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
+	GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, PlayerHalfSize));
+
+	return gObject;
+
+}
+
+static GameObjectPtr GameStateLevel2CreateEarth(void)
+{
+	const AEVec2 Scale = { 300.0f, 300.0f };
+
+	GameObjectPtr gObject = GameObjectCreate("Earth");
+	GameObjectSetTransform(gObject, TransformCreate(0, 0));
+	TransformSetScale(GameObjectGetTransform(gObject), Scale);
+	TransformSetRotation(GameObjectGetTransform(gObject), 0);
+	SpritePtr EarthSprite = SpriteCreate("Earth Sprite");
+	SpriteSetMesh(EarthSprite, pMesh2);
+	SpriteSetSpriteSource(EarthSprite, pSSource2);
+	GameObjectSetSprite(gObject, EarthSprite);
+	GameObjectSetPhysics(gObject, PhysicsCreate());
+	PhysicsAcceleration(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
+	PhysicsVelocity(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
+	SetPhysicsTranslation(GameObjectGetPhysics(gObject), EarthPos);
+	GameObjectSetBoundingBox(gObject, CreateBoundingBox(EarthPos, EarthHalfSize));
+
+	return gObject;
+
+}
+
+static GameObjectPtr GameStateLevel2CreateShot(void)
+{
+	const AEVec2 Scale = { 300.0f, 300.0f };
+
+	GameObjectPtr gObject = GameObjectCreate("Shot");
+	GameObjectSetTransform(gObject, CreateTransform());
+	TransformSetScale(GameObjectGetTransform(gObject), Scale);
+	TransformSetRotation(GameObjectGetTransform(gObject), 0);
+	SpritePtr ShotSprite = SpriteCreate("Shot Sprite");
+	SpriteSetMesh(ShotSprite, pMesh3);
+	SpriteSetSpriteSource(ShotSprite, pSSource3);
+	GameObjectSetSprite(gObject, ShotSprite);
+	GameObjectSetPhysics(gObject, PhysicsCreate());
+	PhysicsAcceleration(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
+	PhysicsVelocity(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
+	SetPhysicsTranslation(GameObjectGetPhysics(gObject), GetOldTranslation(GameObjectGetPhysics(Character)));
+	SetTranslation(GameObjectGetTransform(gObject), GetOldTranslation(GameObjectGetPhysics(gObject)).x, GetOldTranslation(GameObjectGetPhysics(gObject)).y);
+	GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, ShotHalfSize));
+
+	return gObject;
 }

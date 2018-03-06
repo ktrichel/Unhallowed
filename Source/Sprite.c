@@ -2,7 +2,9 @@
 #include "Sprite.h"
 #include "Mesh.h"
 #include "SpriteSource.h"
+#include "Physics.h"
 #include "Trace.h"
+#include "Matrix2D.h"
 #include <AEEngine.h>
 
 //------------------------------------------------------------------------------
@@ -78,7 +80,7 @@ void SpriteFree(SpritePtr * sprite)
 	}
 }
 
-void SpriteDraw(const SpritePtr sprite, AEVec2 position) 
+void SpriteDraw(const SpritePtr sprite, TransformPtr transform) 
 {
 	if (sprite && sprite->mesh)
 	{
@@ -97,7 +99,7 @@ void SpriteDraw(const SpritePtr sprite, AEVec2 position)
 			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 			AEGfxTextureSet(SpriteSourceGetTexture(sprite->spriteSource), u, v);
 		}
-		AEGfxSetPosition(position.x, position.y);
+		AEGfxSetTransform(TransformGetMatrix(transform)->m);
 		AEGfxSetTransparency(sprite->alpha);
 		AEGfxSetBlendColor(0, 0, 0, 0);
 		AEGfxMeshDraw(sprite->mesh, AE_GFX_MDM_TRIANGLES);

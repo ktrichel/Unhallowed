@@ -67,16 +67,35 @@ void FreeBoundingBox(BoundingBoxPtr * box)
 
 bool CollisionCheck(BoundingBoxPtr box1, BoundingBoxPtr box2)
 {
-	if (CollisionCheckTop(box1, box2))
-		return 1;
-	if (CollisionCheckRight(box1, box2))
-		return 1;
-	if (CollisionCheckDown(box1, box2))
-		return 1;
-	if (CollisionCheckLeft(box1, box2))
-		return 1;
+	float box1_xMax = box1->Position.x + box1->HalfSize.x;
+	float box1_xMin = box1->Position.x - box1->HalfSize.x;
+	float box1_yMax = box1->Position.y + box1->HalfSize.y;
+	float box1_yMin = box1->Position.y - box1->HalfSize.y;
 
-	return 0;
+	float box2_xMax = box2->Position.x + box2->HalfSize.x;
+	float box2_xMin = box2->Position.x - box2->HalfSize.x;
+	float box2_yMax = box2->Position.y + box2->HalfSize.y;
+	float box2_yMin = box2->Position.y - box2->HalfSize.y;
+
+	if (box1_xMax < box2_xMin || box1_xMin > box2_xMax)
+		return false;
+	if (box1_yMax < box2_yMin || box1_yMin > box2_yMax)
+		return false;
+
+	/*
+	if (box2->Position.x + box2->HalfSize.x < box1->Position.x)
+		return false;
+	if (box1->Position.x + box1->HalfSize.x < box2->Position.x)
+		return false;
+
+
+	if (box2->Position.y + box2->HalfSize.y < box1->Position.y)
+		return false;
+	if (box1->Position.y + box1->HalfSize.y < box2->Position.y)
+		return false;
+	*/
+
+	return true;
 }
 
 bool CollisionCheckTop(BoundingBoxPtr box1, BoundingBoxPtr box2)
@@ -135,6 +154,14 @@ bool CollisionCheckLeft(BoundingBoxPtr box1, BoundingBoxPtr box2)
 	return 0;
 }
 
+void HalfsizeScale(BoundingBoxPtr box, AEVec2 scale)
+{
+	if (box)
+	{
+		box->HalfSize.x *= scale.x;
+		box->HalfSize.y *= scale.y;
+	}
+}
 //------------------------------------------------------------------------------
 // Private Functions:
 //------------------------------------------------------------------------------

@@ -150,6 +150,14 @@ bool AnimationIsDone(AnimationPtr animation)
 	return false;
 }
 
+void SetAnimationIsRunning(AnimationPtr animation, bool isRunning)
+{
+	if (animation)
+	{
+		animation->isRunning = isRunning;
+	}
+}
+
 //------------------------------------------------------------------------------
 // Private Functions:
 //------------------------------------------------------------------------------

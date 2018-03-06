@@ -137,6 +137,10 @@ void GameObjectSetBoundingBox(GameObjectPtr gameObject, BoundingBoxPtr box);
 
 BoundingBoxPtr GameObjectGetBoundingBox(GameObjectPtr gameObject);
 
+GameObjectPtr GameObjectCreateTile(AEVec2 scale, AEVec2 position, AEGfxVertexList * mesh, SpriteSourcePtr sSource, AEVec2 halfsize);
+
+
+
 //------------------------------------------------------------------------------
 
 #ifdef __cplusplus

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GameObject.h"
+#include "Vector2D.h"
 #include <AEEngine.h>
 
 //------------------------------------------------------------------------------
@@ -191,6 +192,7 @@ void GameObjectUpdate(GameObjectPtr gameObject, float dt)
 	{
 		AnimationUpdate(gameObject->animation, dt);
 		PhysicsUpdate(gameObject->physics, gameObject->transform, dt);
+		UpdateBoundingBox(gameObject->box, GetOldTranslation(gameObject->physics));
 	}
 }
 // Draw any visible components attached to the game object.
@@ -202,7 +204,7 @@ void GameObjectDraw(GameObjectPtr gameObject)
 {
 	if (gameObject)
 	{
-		SpriteDraw(gameObject->sprite, GetOldTranslation(gameObject->physics));
+		SpriteDraw(gameObject->sprite, GameObjectGetTransform(gameObject));
 	}
 }
 
@@ -239,6 +241,27 @@ BoundingBoxPtr GameObjectGetBoundingBox(GameObjectPtr gameObject)
 	}
 	return NULL;
 }
+
+GameObjectPtr GameObjectCreateTile(AEVec2 scale, AEVec2 position, AEGfxVertexList *  mesh, SpriteSourcePtr sSource, AEVec2 halfsize)
+{
+	GameObjectPtr gObject = GameObjectCreate("Tile");
+	GameObjectSetTransform(gObject, TransformCreate(0, 0));
+	TransformSetScale(GameObjectGetTransform(gObject), scale);
+	TransformSetRotation(GameObjectGetTransform(gObject), 0);
+	TransformSetTranslation(GameObjectGetTransform(gObject), &position);
+	SpritePtr EarthSprite = SpriteCreate("Tile Sprite");
+	SpriteSetMesh(EarthSprite, mesh);
+	SpriteSetSpriteSource(EarthSprite, sSource);
+	GameObjectSetSprite(gObject, EarthSprite);
+	GameObjectSetPhysics(gObject, PhysicsCreate());
+	SetPhysicsTranslation(GameObjectGetPhysics(gObject), position);
+	GameObjectSetBoundingBox(gObject, CreateBoundingBox(position, halfsize));
+	HalfsizeScale(GameObjectGetBoundingBox(gObject), scale);
+
+	return gObject;
+
+}
+
 
 //------------------------------------------------------------------------------
 // Private Functions:

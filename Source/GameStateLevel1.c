@@ -23,6 +23,7 @@
 #include "GameObject.h"
 #include "Vector2D.h"
 #include "Matrix2D.h"
+#include "GameObjectFactory.h"
 #include <AEEngine.h>
 #include <stdlib.h>
 
@@ -60,10 +61,17 @@ static GameObjectPtr Character;
 static GameObjectPtr Earth;
 static GameObjectPtr Shot;
 
+static SpritePtr pSprite3;
+static SpriteSourcePtr pSSource3;
+static AEGfxTexture * pTexture3;
+static AEGfxVertexList * pMesh3;
+
+
 static TransformPtr objTransform;
 static PhysicsPtr objPhysics;
 static BoundingBoxPtr BoxEarth;
 static BoundingBoxPtr BoxNumber;
+static BoundingBoxPtr Test;
 
 static AEVec2 Empty = { 0 };
 static AEVec2 EarthPos = { 0.0f, -500.0f };
@@ -73,6 +81,8 @@ static AEVec2 PlayerHalfSize = { 50.0f, 50.0f };
 static AEVec2 EarthHalfSize = { 300.0f, 300.0f };
 static AEVec2 ShotHalfSize = { 25.0f,25.0f };
 static AEVec2 TestStupid = { 0.0f, -200.0f };
+static AEVec2 tileScale = { 0.1f, 0.1f };
+static AEVec2 dummy = { 60.0f, -60.0f }; // represents distance between tiles which is 2*EarthHalfSize*tileScale
 static bool IsJumping = 0;
 static AEVec2 Result = { 0 };
 
@@ -103,12 +113,19 @@ void GameStateLevel1Load()
 	pSSource3 = SpriteSourceCreate(1, 1, pTexture3);
 }
 
+
+
 void GameStateLevel1Init()
 {
 	TraceMessage("Level1: Init");
-	
+	int i = 0;
 	Character = GameStateLevel2CreateCharacter();
-	Earth = GameStateLevel2CreateEarth();
+	while(i < 3)
+	{
+		GameObjectFactoryAdd(GameObjectCreateTile(tileScale, Empty, pMesh2, pSSource2, EarthHalfSize));
+		Vector2DAdd(&Empty, &Empty, &dummy);
+		++i;
+	}
 
 
 	/*
@@ -126,7 +143,7 @@ void GameStateLevel1Init()
 	*/
 	
 	//Set Alpha Engine BG to white(1,1,1)
-	AEGfxSetBackgroundColor(1, 1, 1);
+	AEGfxSetBackgroundColor(0.8f, 0.3f, 0.1f);
 	//Set AEG blend mode to blend
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 	/*
@@ -139,6 +156,7 @@ void GameStateLevel1Init()
 
 void GameStateLevel1Update(float dt)
 {
+	AEVec2 velocity = { 0 };
 	TraceMessage("Level1: Update");
 	if (AEInputCheckCurr(0x31))
 	{
@@ -147,37 +165,48 @@ void GameStateLevel1Update(float dt)
 	if (AEInputCheckCurr(VK_SPACE))
 	{
 		Shot = GameStateLevel2CreateShot();
-		PhysicsVelocity(GameObjectGetPhysics(Shot), 500.0f, 0.0f);
+		Vector2DSet(&velocity, 500.0f, 0.0f);
+		PhysicsVelocity(GameObjectGetPhysics(Shot), velocity);
 	}
 
 	if (AEInputCheckCurr(VK_RIGHT) && 
 		CollisionCheckLeft(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 0)
 	{
-		TransformVelocity(GameObjectGetTransform(Character), 3.0f, 0.0f);
-		AnimationUpdate(GameObjectGetAnimation(Character), dt);
+		Vector2DSet(&velocity, 3.0f, 0.0f);
+		TransformVelocity(GameObjectGetTransform(Character), velocity);
+		SetAnimationIsRunning(GameObjectGetAnimation(Character), 1);
 	}
-	if (AEInputCheckCurr(VK_LEFT) && 
+	else if (AEInputCheckCurr(VK_LEFT) && 
 		CollisionCheckRight(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 0)
 	{
-		TransformVelocity(GameObjectGetTransform(Character), -3.0f, 0.0f);
-		AnimationUpdate(GameObjectGetAnimation(Character), dt);
+		Vector2DSet(&velocity, -3.0f, 0.0f);
+		TransformVelocity(GameObjectGetTransform(Character), velocity);
+		SetAnimationIsRunning(GameObjectGetAnimation(Character), 1);
 	}
-	if (CollisionCheckTop(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 1)
+	else
 	{
+		SetAnimationIsRunning(GameObjectGetAnimation(Character), 0);
+	}
+
+	if (GameObjectFactoryCollision(Character))
+	{
+		Vector2DSet(&velocity, 0.0f, 0.0f);
 		IsJumping = 0;
 		PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, 0.0f);
-		PhysicsVelocity(GameObjectGetPhysics(Character), 0.0f, 0.0f);
+		PhysicsVelocity(GameObjectGetPhysics(Character), velocity);
 		Result = GetOldTranslation(GameObjectGetPhysics(Earth));
 		Vector2DAdd(&Result, &Result, &EarthHalfSize);
+		Vector2DNeg(&Result, &Result);
 		UpdateBoundingBox(GameObjectGetBoundingBox(Character), Result);
 		//SetPhysicsTranslation(GameObjectGetPhysics(Character), Result);
 
 		if (AEInputCheckCurr(VK_UP))
 		{
+			Vector2DSet(&velocity, 0.0f, 220.0f);
 			AnimationUpdate(GameObjectGetAnimation(Character), dt);
 			IsJumping = 1;
 			PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, -300.0f);
-			PhysicsVelocity(GameObjectGetPhysics(Character), 0.0f, 200.0f);
+			PhysicsVelocity(GameObjectGetPhysics(Character), velocity);
 			//TransformVelocity(objTransform, 0.0f, 3.0f);
 		}
 
@@ -192,27 +221,12 @@ void GameStateLevel1Update(float dt)
 	}
 	else if (IsJumping == 0)
 	{
-		PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, 0.0f);
-	}
-
-	TraceMessage("Level1: Update");
-	if (AEInputCheckCurr(VK_RIGHT) && 
-		CollisionCheckLeft(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 0)
-	{
-		TransformVelocity(GameObjectGetTransform(Character), 3.0f, 0.0f);
-		AnimationUpdate(GameObjectGetAnimation(Character), dt);
-	}
-	if (AEInputCheckCurr(VK_LEFT) && 
-		CollisionCheckRight(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(Earth)) == 0)
-	{
-		TransformVelocity(GameObjectGetTransform(Character), -3.0f, 0.0f);
-		AnimationUpdate(GameObjectGetAnimation(Character), dt);
+		PhysicsAcceleration(GameObjectGetPhysics(Character), 0.0f, -80.0f);
 	}
 	
-
-	 if (GetOldTranslation(GameObjectGetPhysics(Character)).y < -1500.0f)
+	if (GetOldTranslation(GameObjectGetPhysics(Character)).y < -1500.0f)
 	{
-	 SetTranslation(GameObjectGetTransform(Character), 0.0f, 0.0f);
+	 TransformSetTranslation(GameObjectGetTransform(Character), &Empty);
 	 SetPhysicsTranslation(GameObjectGetPhysics(Character), Empty);
 	}
 
@@ -220,10 +234,13 @@ void GameStateLevel1Update(float dt)
 	PhysicsUpdate(GameObjectGetPhysics(Shot), GameObjectGetTransform(Shot), dt);
 	AEGfxSetCamPosition(GetOldTranslation(GameObjectGetPhysics(Character)).x, GetOldTranslation(GameObjectGetPhysics(Character)).y);
 	UpdateBoundingBox(GameObjectGetBoundingBox(Character), GetOldTranslation(GameObjectGetPhysics(Character)));
-	PhysicsUpdate(GameObjectGetPhysics(Character), GameObjectGetTransform(Character), dt);
-	GameObjectDraw(Earth);
+
+	GameObjectUpdate(Character, dt);
+	GameObjectFactoryUpdate(dt);
+
 	GameObjectDraw(Shot);
 	GameObjectDraw(Character);
+	GameObjectFactoryDraw();
 }
 
 void GameStateLevel1Shutdown()
@@ -255,7 +272,7 @@ void GameStateLevel1Unload()
 
 static GameObjectPtr GameStateLevel2CreateCharacter(void)
 {
-	const AEVec2 Scale = { 300.0f, 300.0f };
+	const AEVec2 Scale = { 1.0f, 1.0f };
 
 	GameObjectPtr gObject = GameObjectCreate("Character");
 	GameObjectSetTransform(gObject, CreateTransform());
@@ -269,13 +286,13 @@ static GameObjectPtr GameStateLevel2CreateCharacter(void)
 	AnimationPlay(GameObjectGetAnimation(gObject), 3, 0.25, true);
 	GameObjectSetPhysics(gObject, PhysicsCreate());
 	PhysicsAcceleration(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
-	PhysicsVelocity(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
+	PhysicsVelocity(GameObjectGetPhysics(gObject), Empty);
 	GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, PlayerHalfSize));
 
 	return gObject;
 
 }
-
+/*
 static GameObjectPtr GameStateLevel2CreateEarth(void)
 {
 	const AEVec2 Scale = { 300.0f, 300.0f };
@@ -296,7 +313,7 @@ static GameObjectPtr GameStateLevel2CreateEarth(void)
 
 	return gObject;
 
-}
+}*/
 
 static GameObjectPtr GameStateLevel2CreateShot(void)
 {
@@ -312,9 +329,10 @@ static GameObjectPtr GameStateLevel2CreateShot(void)
 	GameObjectSetSprite(gObject, ShotSprite);
 	GameObjectSetPhysics(gObject, PhysicsCreate());
 	PhysicsAcceleration(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
-	PhysicsVelocity(GameObjectGetPhysics(gObject), 0.0f, 0.0f);
-	SetPhysicsTranslation(GameObjectGetPhysics(gObject), GetOldTranslation(GameObjectGetPhysics(Character)));
-	SetTranslation(GameObjectGetTransform(gObject), GetOldTranslation(GameObjectGetPhysics(gObject)).x, GetOldTranslation(GameObjectGetPhysics(gObject)).y);
+	PhysicsVelocity(GameObjectGetPhysics(gObject), Empty);
+	AEVec2 translation = GetOldTranslation(GameObjectGetPhysics(Character));
+	SetPhysicsTranslation(GameObjectGetPhysics(gObject), translation);
+	TransformSetTranslation(GameObjectGetTransform(gObject), &translation);
 	GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, ShotHalfSize));
 
 	return gObject;

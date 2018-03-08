@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Physics.h"
+#include "Matrix2D.h"
 #include <AEEngine.h>
 
 //------------------------------------------------------------------------------
@@ -49,23 +50,26 @@ void PhysicsUpdate(PhysicsPtr physics, TransformPtr transform, float dt)
 {
 	if (physics && transform)
 	{
-		physics->oldTranslation = transform->translation;
-		physics->velocity.x += physics->acceleration.x * dt;
-		physics->velocity.y += physics->acceleration.y * dt;
-		physics->oldTranslation.x += physics->velocity.x * dt;
-		physics->oldTranslation.y += physics->velocity.y * dt;
-        AEGfxSetCamPosition(transform->translation.x, transform->translation.y);
-		transform->translation = physics->oldTranslation;
+		physics->oldTranslation = *TransformGetTranslation(transform);
+		AEVec2 newtranslation = physics->oldTranslation;
+		Vector2DScaleAdd(&physics->velocity, &physics->acceleration, &physics->velocity, dt);
+		Vector2DScaleAdd(&newtranslation, &physics->velocity, &physics->oldTranslation, dt);
+
+		const AEVec2 * translate = &newtranslation;
+		float rotation = TransformGetRotation(transform);
+
+		TransformSetRotation(transform, rotation);
+		TransformSetTranslation(transform, translate);
 	}
 
 }
 
-void PhysicsAcceleration(PhysicsPtr physics, float x_acceleration, float y_acceleration)
+void PhysicsAcceleration(PhysicsPtr physics, AEVec2 acceleration)
 {
 	if (physics)
 	{
-		physics->acceleration.x = x_acceleration;
-		physics->acceleration.y = y_acceleration;
+		physics->acceleration.x = acceleration.x;
+		physics->acceleration.y = acceleration.y;
 	}
 }
 
@@ -142,22 +146,20 @@ void FreePhysics(PhysicsPtr * physics)
 	*physics = NULL;
 }
 
-void TransformVelocity(TransformPtr transform, float x, float y)
+void TransformVelocity(TransformPtr transform, AEVec2 velocity)
 {
 	if (transform)
 	{
-		transform->translation.x += x;
-		transform->translation.y += y;
-    AEGfxSetCamPosition(transform->translation.x, transform->translation.y);
+		Vector2DAdd(&transform->translation, &transform->translation, &velocity);
+		AEGfxSetCamPosition(transform->translation.x, transform->translation.y);
 	}
 }
 
-void PhysicsVelocity(PhysicsPtr physics, float x, float y)
+void PhysicsVelocity(PhysicsPtr physics, AEVec2 velocity)
 {
 	if (physics)
 	{
-		physics->velocity.x = x;
-		physics->velocity.y = y;
+		physics->velocity = velocity;
 	}
 }
 AEVec2 GetOldTranslation(PhysicsPtr physics)
@@ -174,18 +176,21 @@ void SetPhysicsTranslation(PhysicsPtr physics, AEVec2 translation)
 {
   if (physics)
   {
-    physics->oldTranslation.x = translation.x;
-    physics->oldTranslation.y = translation.y;
+	  physics->oldTranslation = translation;
   }
 }
-
-void SetTranslation(TransformPtr transform, float x, float y)
+// Set the translation of a transform component.
+// Params:
+//	 transform = Pointer to the transform component.
+//	 translation = Pointer to a translation vector.
+void TransformSetTranslation(TransformPtr transform, const AEVec2 * translation)
 {
-  if (transform)
-  {
-    transform->translation.x = x;
-    transform->translation.y = y;
-  }
+	if (transform && translation)
+	{
+		transform->translation.x = translation->x;
+		transform->translation.y = translation->y;
+		transform->isDirty = true;
+	}
 }
 
 void TransformSetScale(TransformPtr transform, AEVec2 scale)
@@ -204,6 +209,70 @@ void TransformSetRotation(TransformPtr transform, float rotation)
 	}
 }
 
+// Get the transform matrix, based upon translation, rotation and scale settings.
+// Params:
+//	 transform = Pointer to the transform object.
+// Returns:
+//	 If the transform pointer is valid,
+//		then return a pointer to the component's matrix structure,
+//		else return a NULL pointer.
+AEMtx33 * TransformGetMatrix(const TransformPtr transform)
+{
+	if (transform)
+	{
+		if (transform->isDirty)
+		{
+			AEMtx33 translate;
+			AEMtx33 rotate;
+			AEMtx33 scale;
+
+			Matrix2DTranslate(&translate, transform->translation.x, transform->translation.y);
+			Matrix2DScale(&scale, transform->scale.x, transform->scale.y);
+			Matrix2DRotRad(&rotate, transform->rotation);
+
+			Matrix2DConcat(&transform->matrix, &rotate, &scale);
+			Matrix2DConcat(&transform->matrix, &translate, &transform->matrix);
+			transform->isDirty = false;
+		}
+		return &transform->matrix;
+	}
+	return NULL;
+}
+
+// Get the translation of a transform component.
+// Params:
+//	 transform = Pointer to the transform object.
+// Returns:
+//	 If the transform pointer is valid,
+//		then return a pointer to the component's translation structure,
+//		else return a NULL pointer.
+const AEVec2 * TransformGetTranslation(const TransformPtr transform)
+{
+	if (transform)
+	{
+		return &transform->translation;
+	}
+	return NULL;
+}
+
+float TransformGetRotation(const TransformPtr transform)
+{
+	if (transform)
+	{
+		return transform->rotation;
+	}
+	return 0;
+}
+
+AEVec2 PhysicsGetVelocity(PhysicsPtr physics)
+{
+	AEVec2 Empty = { 0 };
+	if (physics)
+	{
+		return physics->velocity;
+	}
+	return Empty;
+}
 //------------------------------------------------------------------------------
 // Private Functions:
 //------------------------------------------------------------------------------

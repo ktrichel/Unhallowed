@@ -71,9 +71,6 @@
     <ClCompile Include="Source\SpriteSource.c">
       <Filter>Engine\GameObjects\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Combat.c">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Collision.c">
       <Filter>Engine\GameObjects\Graphics\Physics</Filter>
     </ClCompile>
@@ -97,6 +94,9 @@
     </ClCompile>
     <ClCompile Include="Source\Matrix2D.c">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjectFactory.c">
+      <Filter>Engine\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,9 +149,6 @@
     <ClInclude Include="Source\GameStateLevel2.h">
       <Filter>Game\GameStates</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Combat.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Collision.h">
       <Filter>Engine\GameObjects\Graphics\Physics</Filter>
     </ClInclude>
@@ -175,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="Source\Matrix2D.h">
       <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjectFactory.h">
+      <Filter>Engine\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

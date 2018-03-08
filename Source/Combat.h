@@ -26,6 +26,7 @@ extern "C" {
 // Forward References:
 //------------------------------------------------------------------------------
 typedef struct Combat * CombatPtr;
+typedef struct GameObject * GameObjectPtr;
 
 //------------------------------------------------------------------------------
 // Public Consts:

@@ -116,6 +116,7 @@ void Vector2DFromAngleDeg(AEVec2 *pResult, float angle);
 // This function computes the coordinates of the unit vector represented by the angle "angle", which is in Radians.
 void Vector2DFromAngleRad(AEVec2 *pResult, float angle);
 
+void Vector2DMul(AEVec2 *pResult, const AEVec2 *pVec0, const AEVec2 *pVec1);
 //------------------------------------------------------------------------------
 
 #ifdef __cplusplus

@@ -48,11 +48,14 @@ bool CollisionCheckDown(BoundingBoxPtr box1, BoundingBoxPtr box2);
 
 bool CollisionCheckLeft(BoundingBoxPtr box1, BoundingBoxPtr box2);
 
-	// updates the position of the bounding box
-	void UpdateBoundingBox(BoundingBoxPtr box, AEVec2 position);
+// updates the position of the bounding box
+void UpdateBoundingBox(BoundingBoxPtr box, AEVec2 position);
 
 void FreeBoundingBox(BoundingBoxPtr * box);
 
+void HalfsizeScale(BoundingBoxPtr box, AEVec2 scale);
+
+int CollisionCheckCollidedSide(BoundingBoxPtr box1, BoundingBoxPtr box2);
 //------------------------------------------------------------------------------
 
 #ifdef __cplusplus

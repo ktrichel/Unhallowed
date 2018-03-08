@@ -47,7 +47,6 @@ static SpriteSourcePtr pSSource;
 static AnimationPtr pAnimation;
 static AnimationSequencePtr pASequence;
 static AnimationFrame AArray[3] = { {4, 0.32f},{2, 0.32f},{5, 0.5f} };
-static AEVec2 Position;
 
 //------------------------------------------------------------------------------
 // Private Function Declarations:
@@ -69,8 +68,6 @@ void GameStateLevel2Load()
 	{
 		fgets(buffer, 16, Level2Lives);
 		numLives = atoi(buffer);
-		Position.x = 0;
-		Position.y = 0;
 		pMesh = MeshCreateQuad(300, 300, 0.25, 0.25, "Mesh4x4");
 		pTexture = AEGfxTextureLoad("Assets\\Hexidecimal.png");
 		fclose(Level2Lives);
@@ -106,7 +103,7 @@ void GameStateLevel2Update(float dt)
 	TraceMessage("Level2: Update");
 
 	AnimationUpdate(pAnimation, dt);
-	SpriteDraw(pSprite, Position);
+	//SpriteDraw(pSprite, Position);
 
 	if (AnimationIsDone(pAnimation))
 	{

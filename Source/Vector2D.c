@@ -206,6 +206,15 @@ void Vector2DFromAngleRad(AEVec2 *pResult, float angle)
 	}
 }
 
+void Vector2DMul(AEVec2 *pResult, const AEVec2 *pVec0, const AEVec2 *pVec1)
+{
+	if (pResult && pVec0 && pVec1)
+	{
+		pResult->x = pVec0->x * pVec1->x;
+		pResult->y = pVec0->y * pVec1->y;
+	}
+
+}
 //------------------------------------------------------------------------------
 // Private Functions:
 //------------------------------------------------------------------------------

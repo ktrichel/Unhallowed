@@ -94,7 +94,7 @@ void CombatUpdate(CombatPtr enemyAttacks, CombatPtr playerAttacks, GameObjectPtr
 {
 	if ( enemyAttacks && playerAttacks && enemies && character)
 	{
-		EnemyResolution(enemies, playerAttacks);
+		EnemyResolution(enemies, playerAttacks, 0);
 		PlayerResolution(character, enemyAttacks);
 
 	}
@@ -108,11 +108,11 @@ void EnemyResolution(GameObjectPtr enemies, CombatPtr playerAttack, int length)
 		   If true on collision check detriment the enemy's health variable										*/
 		for (int i = 0; i < length; i++)
 		{
-			if (CollisionCheckLeft(GameObjectGetBoundingBox(enemies), CombatObjectGetBoundingBox(playerAttack)) == 1)
+			if (CollisionCheckLeft(GameObjectGetBoundingBox(enemies), CombatObjectGetBoundingBox(playerAttack)))
 			{
 				DisplaceObjectRight(enemies);
 			}
-			if (CollisionCheckRight(GameObjectGetBoundingBox(enemies), CombatObjectGetBoundingBox(playerAttack)) == 1)
+			if (CollisionCheckRight(GameObjectGetBoundingBox(enemies), CombatObjectGetBoundingBox(playerAttack)))
 			{
 				DisplaceObjectLeft(enemies);
 			}

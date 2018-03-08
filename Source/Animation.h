@@ -127,6 +127,8 @@ void AnimationUpdate(AnimationPtr animation, float dt);
 //		else return false.
 bool AnimationIsDone(AnimationPtr animation);
 
+void SetAnimationIsRunning(AnimationPtr animation, bool isRunning);
+
 /*----------------------------------------------------------------------------*/
 
 #ifdef __cplusplus

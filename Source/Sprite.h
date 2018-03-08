@@ -29,6 +29,7 @@ extern "C" {
 typedef struct AEGfxVertexList AEGfxVertexList;
 typedef struct AEVec2 AEVec2;
 typedef struct SpriteSource * SpriteSourcePtr;
+typedef struct Transform * TransformPtr;
 
 //------------------------------------------------------------------------------
 // Public Consts:
@@ -93,7 +94,7 @@ void SpriteFree(SpritePtr * sprite);
 // Params:
 //	 sprite = Pointer to the sprite object.
 //   position = The world position of the sprite.
-void SpriteDraw(const SpritePtr sprite, AEVec2 position);
+void SpriteDraw(const SpritePtr sprite, TransformPtr transform);
 
 // Adjust a sprite's alpha up/down.
 // (NOTE: Make sure to clamp the resulting alpha value between 0.0f and 1.0f.)

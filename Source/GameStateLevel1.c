@@ -101,7 +101,6 @@ static Vector2D Distance = { 0 };
 static GameObjectPtr GameStateLevel2CreateCharacter(void);
 static GameObjectPtr GameStateLevel2CreateEarth(void);
 static void GameStateAsteroidsCreateBulletArchetype(void);
-static void GameStateAsteroidsCreateEnemyArchetype(void);
 
 //------------------------------------------------------------------------------
 // Public Functions:
@@ -366,9 +365,4 @@ static void GameStateAsteroidsCreateBulletArchetype(void)
   GameObjectSetBehavior(bullet, bBullet);
 
   GameObjectManagerAddArchetype(bullet);
-}
-
-static void GameStateAsteroidsCreateEnemyArchetype(void)
-{
-
 }

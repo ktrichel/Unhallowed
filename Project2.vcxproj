@@ -16,6 +16,7 @@
     <ClInclude Include="Source\AnimationSequence.h" />
     <ClInclude Include="Source\Behavior.h" />
     <ClInclude Include="Source\BehaviorBullet.h" />
+    <ClInclude Include="Source\BehaviorEnemy.h" />
     <ClInclude Include="Source\BehaviorPlayer.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Engine.h" />
@@ -44,6 +45,7 @@
     <ClCompile Include="Source\AnimationSequence.c" />
     <ClCompile Include="Source\Behavior.c" />
     <ClCompile Include="Source\BehaviorBullet.c" />
+    <ClCompile Include="Source\BehaviorEnemy.c" />
     <ClCompile Include="Source\BehaviorPlayer.c" />
     <ClCompile Include="Source\Collision.c" />
     <ClCompile Include="Source\Engine.c" />

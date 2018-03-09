@@ -370,3 +370,49 @@ static void GameStateAsteroidsCreateBulletArchetype(void)
 
   GameObjectManagerAddArchetype(bullet);
 }
+
+static void GameStateAsteroidsCreateEnemy(void)
+{
+  Vector2D scale = { 50, 50 };
+  GameObjectPtr enemy = GameObjectCreate("Enemy");
+  TransformPtr trEnemy = TransformCreate(0, 0);
+  SpritePtr sprEnemy = SpriteCreate("Enemy Sprite");
+  PhysicsPtr phyEnemy = PhysicsCreate();
+  BehaviorPtr bEnemy = BehaviorEnemyCreate();
+
+  TransformSetRotation(trEnemy, 0);
+  TransformSetScale(trEnemy, scale);
+
+  SpriteSetSpriteSource(sprEnemy, pSSource3);
+  SpriteSetMesh(sprEnemy, pMeshBullet);
+
+  GameObjectSetTransform(enemy, trEnemy);
+  GameObjectSetSprite(enemy, sprEnemy);
+  GameObjectSetPhysics(enemy, phyEnemy);
+  GameObjectSetBehavior(enemy, bEnemy);
+
+  GameObjectManagerAdd(enemy);
+}
+
+static void GameStateAsteroidsCreateEnemyArchetype(void)
+{
+  Vector2D scale = { 50, 50 };
+  GameObjectPtr enemy = GameObjectCreate("Enemy");
+  TransformPtr trEnemy = TransformCreate(0, 0);
+  SpritePtr sprEnemy = SpriteCreate("Enemy Sprite");
+  PhysicsPtr phyEnemy = PhysicsCreate();
+  BehaviorPtr bEnemy = BehaviorEnemyCreate();
+
+  TransformSetRotation(trEnemy, 0);
+  TransformSetScale(trEnemy, scale);
+
+  SpriteSetSpriteSource(sprEnemy, pSSource3);
+  SpriteSetMesh(sprEnemy, pMeshBullet);
+
+  GameObjectSetTransform(enemy, trEnemy);
+  GameObjectSetSprite(enemy, sprEnemy);
+  GameObjectSetPhysics(enemy, phyEnemy);
+  GameObjectSetBehavior(enemy, bEnemy);
+
+  GameObjectManagerAddArchetype(enemy);
+}

@@ -92,6 +92,15 @@ typedef struct Animation
 //	 sprite = Pointer to the sprite object associated with the animation.
 AnimationPtr AnimationCreate(SpritePtr sprite);
 
+// Dynamically allocate a clone of an existing animation.
+// Params:
+//	 other = Pointer to the component to be cloned.
+// Returns:
+//	 If 'other' is valid and the memory allocation was successful,
+//	   then return a pointer to the cloned component,
+//	   else return NULL.
+AnimationPtr AnimationClone(const AnimationPtr other, SpritePtr sprite);
+
 // Free the memory associated with an animation.
 // (Also, set the animation pointer to NULL.)
 // Params:

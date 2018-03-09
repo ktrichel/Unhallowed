@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameObject.h"
 #include "Vector2D.h"
+#include "Behavior.h"
 #include <AEEngine.h>
 
 //------------------------------------------------------------------------------
@@ -15,6 +16,8 @@ typedef struct GameObject
 {
 	const char * name;
 
+  bool isDestroyed;
+
 	BoundingBoxPtr box;
 
 	PhysicsPtr physics;
@@ -25,7 +28,11 @@ typedef struct GameObject
 
 	SpritePtr sprite;
 
+  BehaviorPtr behavior;
+
 	int health;
+
+  float timer;
 }GameObject;
 
 //------------------------------------------------------------------------------
@@ -63,6 +70,34 @@ GameObjectPtr GameObjectCreate(const char * name)
 	}
 	return NULL;
 }
+
+// Dynamically allocate a clone of an existing game object.
+// Params:
+//	 other = Pointer to the game object to be cloned.
+// Returns:
+//	 If 'other' is valid and the memory allocation was successful,
+//	   then return a pointer to the cloned object,
+//	   else return NULL.
+GameObjectPtr GameObjectClone(const GameObjectPtr other)
+{
+  if (other)
+  {
+    GameObjectPtr gameObject = calloc(1, sizeof(GameObject));
+    if (gameObject)
+    {
+      gameObject->name = other->name;
+      gameObject->sprite = SpriteClone(other->sprite);
+      gameObject->animation = AnimationClone(other->animation, gameObject->sprite);
+      gameObject->behavior = BehaviorClone(other->behavior, gameObject);
+      gameObject->isDestroyed = other->isDestroyed;
+      gameObject->physics = PhysicsClone(other->physics);
+      gameObject->transform = TransformClone(other->transform);
+      return gameObject;
+    }
+  }
+  return NULL;
+}
+
 // Free the memory associated with a game object.
 // (Also, set the game object pointer to NULL.)
 // Params:
@@ -71,10 +106,48 @@ void GameObjectFree(GameObjectPtr * gameObject)
 {
 	if (gameObject && *gameObject)
 	{
-		free(*gameObject);
-		*gameObject = NULL;
+    AnimationFree(&((*gameObject)->animation));
+    FreePhysics(&(*gameObject)->physics);
+    SpriteFree(&(*gameObject)->sprite);
+    FreeTransform(&(*gameObject)->transform);
+    FreeBoundingBox(&(*gameObject)->box);
+    free(*gameObject);
+    (*gameObject) = NULL;
 	}
 }
+
+// Flag a game object for destruction.
+// (Note: This is to avoid game objects being destroyed while they are being processed.)
+// Params:
+//	 gameObject = Pointer to the game object to be destroyed.
+// Returns:
+//	 If 'gameObject' is valid,
+//	   then set the 'isDestroyed' boolean variable,
+//	   else bail.
+void GameObjectDestroy(GameObjectPtr gameObject)
+{
+  if (gameObject)
+  {
+    gameObject->isDestroyed = true;
+  }
+}
+
+// Check whether a game object has been flagged for destruction.
+// Params:
+//	 gameObject = Pointer to the game object to be checked.
+// Returns:
+//	 If 'gameObject' is valid,
+//	   then return the 'isDestroyed' boolean variable,
+//	   else return false.
+bool GameObjectIsDestroyed(GameObjectPtr gameObject)
+{
+  if (gameObject)
+  {
+    return gameObject->isDestroyed;
+  }
+  return false;
+}
+
 // Attach an animation component to a game object.
 // Params:
 //	 gameObject = Pointer to the game object.
@@ -86,6 +159,20 @@ void GameObjectSetAnimation(GameObjectPtr gameObject, AnimationPtr animation)
 		gameObject->animation = animation;
 	}
 }
+
+// Attach a behavior component to a game object.
+// Params:
+//	 gameObject = Pointer to the game object.
+//   behavior = Pointer to the behavior component to be attached.
+void GameObjectSetBehavior(GameObjectPtr gameObject, BehaviorPtr behavior)
+{
+  if (gameObject && behavior)
+  {
+    gameObject->behavior = behavior;
+    gameObject->behavior->parent = gameObject;
+  }
+}
+
 // Attach a physics component to a game object.
 // Params:
 //	 gameObject = Pointer to the game object.
@@ -120,6 +207,43 @@ void GameObjectSetTransform(GameObjectPtr gameObject, TransformPtr transform)
 	}
 }
 
+// Get the game object's name.
+// Params:
+//	 gameObject = Pointer to the game object.
+// Returns:
+//	 If the game object pointer is valid,
+//		then return a pointer to the game object's name,
+//		else return NULL.
+const char * GameObjectGetName(const GameObjectPtr gameObject)
+{
+  if (gameObject)
+  {
+    return gameObject->name;
+  }
+  return NULL;
+}
+
+// Compare the game object's name with the specified name.
+// Params:
+//	 gameObject = Pointer to the game object.
+//   name = Pointer to the name to be checked.
+// Returns:
+//	 If the game object pointer is valid,
+//		then return true if the names match, false otherwise,
+//		else return false.
+bool GameObjectIsNamed(const GameObjectPtr gameObject, const char * name)
+{
+  if (gameObject)
+  {
+    if (strcmp(gameObject->name, name));
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+
 // Get the animation component attached to a game object.
 // Params:
 //	 gameObject = Pointer to the game object.
@@ -135,6 +259,23 @@ AnimationPtr GameObjectGetAnimation(const GameObjectPtr gameObject)
 	}
 	return NULL;
 }
+
+// Get the behavior component attached to a game object.
+// Params:
+//	 gameObject = Pointer to the game object.
+// Returns:
+//	 If the game object pointer is valid,
+//		then return a pointer to the attached behavior component,
+//		else return NULL.
+BehaviorPtr GameObjectGetBehavior(const GameObjectPtr gameObject)
+{
+  if (gameObject)
+  {
+    return gameObject->behavior;
+  }
+  return NULL;
+}
+
 // Get the physics component attached to a game object.
 // Params:
 //	 gameObject = Pointer to the game object.
@@ -188,12 +329,16 @@ TransformPtr GameObjectGetTransform(const GameObjectPtr gameObject)
 //	 dt = Change in time (in seconds) since the last game loop.
 void GameObjectUpdate(GameObjectPtr gameObject, float dt)
 {
-	if (gameObject)
-	{
-		AnimationUpdate(gameObject->animation, dt);
-		PhysicsUpdate(gameObject->physics, gameObject->transform, dt);
-		UpdateBoundingBox(gameObject->box, GetOldTranslation(gameObject->physics));
-	}
+  if (gameObject && gameObject->physics && gameObject->transform)
+  {
+    if (gameObject->animation)
+    {
+      AnimationUpdate(gameObject->animation, dt);
+    }
+    PhysicsUpdate(gameObject->physics, gameObject->transform, dt);
+    BehaviorUpdate(gameObject->behavior, dt);
+    UpdateBoundingBox(gameObject->box, GetOldTranslation(gameObject->physics));
+  }
 }
 // Draw any visible components attached to the game object.
 // (Hint: You will need to call SpriteDraw(), passing the sprite and transform components.)
@@ -202,10 +347,10 @@ void GameObjectUpdate(GameObjectPtr gameObject, float dt)
 //	 gameObject = Pointer to the game object.
 void GameObjectDraw(GameObjectPtr gameObject)
 {
-	if (gameObject)
-	{
-		SpriteDraw(gameObject->sprite, GameObjectGetTransform(gameObject));
-	}
+  if (gameObject && gameObject->sprite && gameObject->transform)
+  {
+    SpriteDraw(gameObject->sprite, gameObject->transform);
+  }
 }
 
 void GameObjectSetHealth(GameObjectPtr gameObject, int health)
@@ -242,7 +387,7 @@ BoundingBoxPtr GameObjectGetBoundingBox(GameObjectPtr gameObject)
 	return NULL;
 }
 
-GameObjectPtr GameObjectCreateTile(AEVec2 scale, AEVec2 position, AEGfxVertexList *  mesh, SpriteSourcePtr sSource, AEVec2 halfsize)
+GameObjectPtr GameObjectCreateTile(Vector2D scale, Vector2D position, AEGfxVertexList *  mesh, SpriteSourcePtr sSource, Vector2D halfsize)
 {
 	GameObjectPtr gObject = GameObjectCreate("Tile");
 	GameObjectSetTransform(gObject, TransformCreate(0, 0));
@@ -261,7 +406,6 @@ GameObjectPtr GameObjectCreateTile(AEVec2 scale, AEVec2 position, AEGfxVertexLis
 	return gObject;
 
 }
-
 
 //------------------------------------------------------------------------------
 // Private Functions:

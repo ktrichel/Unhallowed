@@ -14,10 +14,14 @@
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\AnimationFrame.h" />
     <ClInclude Include="Source\AnimationSequence.h" />
+    <ClInclude Include="Source\Behavior.h" />
+    <ClInclude Include="Source\BehaviorBullet.h" />
+    <ClInclude Include="Source\BehaviorPlayer.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Engine.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\GameObjectFactory.h" />
+    <ClInclude Include="Source\GameObjectManager.h" />
     <ClInclude Include="Source\GameStateLevel1.h" />
     <ClInclude Include="Source\GameStateLevel2.h" />
     <ClInclude Include="Source\GameStateManager.h" />
@@ -38,10 +42,14 @@
   <ItemGroup>
     <ClCompile Include="Source\Animation.c" />
     <ClCompile Include="Source\AnimationSequence.c" />
+    <ClCompile Include="Source\Behavior.c" />
+    <ClCompile Include="Source\BehaviorBullet.c" />
+    <ClCompile Include="Source\BehaviorPlayer.c" />
     <ClCompile Include="Source\Collision.c" />
     <ClCompile Include="Source\Engine.c" />
     <ClCompile Include="Source\GameObject.c" />
     <ClCompile Include="Source\GameObjectFactory.c" />
+    <ClCompile Include="Source\GameObjectManager.c" />
     <ClCompile Include="Source\GameStateLevel1.c" />
     <ClCompile Include="Source\GameStateLevel2.c" />
     <ClCompile Include="Source\GameStateManager.c" />
@@ -66,7 +74,7 @@
     <ProjectGuid>{71A03382-4E92-4D93-A8D2-58B289C3D484}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Project2_Part1</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

@@ -100,7 +100,7 @@ void Matrix2DRotRad(AEMtx33 *pResult, float angle);
 // This function multiplies the matrix Mtx with the vector Vec and saves the result in Result.
 // Result = Mtx * Vec.
 // (NOTE: Care must be taken when pResult = pVec.)
-void Matrix2DMultVec(AEVec2 *pResult, AEMtx33 *pMtx, AEVec2 *pVec);
+void Matrix2DMultVec(Vector2D *pResult, AEMtx33 *pMtx, Vector2D *pVec);
 
 //------------------------------------------------------------------------------
 

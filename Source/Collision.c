@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Collision.h"
+#include "Vector2D.h"
 #include <AEEngine.h>
 
 //------------------------------------------------------------------------------
@@ -12,8 +13,8 @@
 
 typedef struct BoundingBox
 {
-	AEVec2 Position;
-	AEVec2 HalfSize;
+	Vector2D Position;
+	Vector2D HalfSize;
 } BoundingBox;
 
 //------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ enum sides { cTop, cRight, cBottom, cLeft };
 // Public Functions:
 //------------------------------------------------------------------------------
 
-BoundingBoxPtr CreateBoundingBox(AEVec2 position, AEVec2 halfsize)
+BoundingBoxPtr CreateBoundingBox(Vector2D position, Vector2D halfsize)
 {
 	BoundingBoxPtr box = calloc(1, sizeof(BoundingBox));
 	box->Position = position;
@@ -43,9 +44,9 @@ BoundingBoxPtr CreateBoundingBox(AEVec2 position, AEVec2 halfsize)
 	return box;
 }
 
-AEVec2 GetHalfSize(BoundingBoxPtr box)
+Vector2D GetHalfSize(BoundingBoxPtr box)
 {
-	AEVec2 empty = { 0 };
+	Vector2D empty = { 0 };
 	if (box)
 	{
 		return box->HalfSize;
@@ -53,7 +54,7 @@ AEVec2 GetHalfSize(BoundingBoxPtr box)
 	return empty;
 }
 
-void UpdateBoundingBox(BoundingBoxPtr box, AEVec2 position)
+void UpdateBoundingBox(BoundingBoxPtr box, Vector2D position)
 {
 	if (box)
 	{
@@ -219,7 +220,7 @@ bool CollisionCheckLeft(BoundingBoxPtr box1, BoundingBoxPtr box2)
 	return 0;
 }
 
-void HalfsizeScale(BoundingBoxPtr box, AEVec2 scale)
+void HalfsizeScale(BoundingBoxPtr box, Vector2D scale)
 {
 	if (box)
 	{

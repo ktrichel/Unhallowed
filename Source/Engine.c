@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "Engine.h"
 #include "GameStateManager.h"
+#include "GameObjectManager.h"
 #include "System.h"
 #include "Trace.h"
 
@@ -58,6 +59,8 @@ void EngineInit()
 	// NOTE: Other modules can be initialized later and in any order.
 	//--------------------------------------------------------------------------
 
+  GameObjectManagerInit();
+  
 	// Initialize the game state manager.
 	GameStateManagerInit();
 }
@@ -75,6 +78,10 @@ void EngineUpdate(float dt)
 	// Update the game state manager.
 	GameStateManagerUpdate(dt);
 
+  GameObjectManagerUpdate(dt);
+
+  GameObjectManagerDraw();
+
 	// Complete the draw process for the current game loop.
 	SystemDraw();
 }
@@ -90,6 +97,8 @@ void EngineShutdown()
 
 	// Shutdown the game state manager.
 	GameStateManagerShutdown();
+
+  GameObjectManagerShutdown();
 
 	//--------------------------------------------------------------------------
 	// NOTE: Certain modules need to be shutdown last and in reverse order.

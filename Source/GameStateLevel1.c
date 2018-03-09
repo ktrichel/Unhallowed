@@ -27,6 +27,7 @@
 #include "Behavior.h"
 #include "BehaviorBullet.h"
 #include "GameObjectManager.h"
+#include "BehaviorPlayer.h"
 #include <AEEngine.h>
 #include <stdlib.h>
 
@@ -50,26 +51,30 @@ static AEGfxTexture * pTexture;
 static AEGfxVertexList * pMesh;
 static SpritePtr pSprite;
 static SpriteSourcePtr pSSource;
+
 static AEGfxTexture * pTexture2;
 static AEGfxVertexList * pMesh2;
 static SpritePtr pSprite2;
 static SpriteSourcePtr pSSource2;
+
 static AEGfxTexture * pTexture3;
 static AEGfxVertexList * pMesh3;
 static SpritePtr pSprite3;
 static SpriteSourcePtr pSSource3;
+
 static AnimationPtr pAnimation;
 static Vector2D Position;
 static GameObjectPtr Character;
 static GameObjectPtr Earth;
-static GameObjectPtr Shot;
-
-static SpritePtr pSprite3;
-static SpriteSourcePtr pSSource3;
-static AEGfxTexture * pTexture3;
-static AEGfxVertexList * pMesh3;
 
 static AEGfxVertexList*	pMeshBullet = NULL;
+
+static AEGfxVertexList* bgMesh;
+static AEGfxTexture* bgTexture;
+static SpriteSourcePtr bgSSource;
+static SpritePtr bgSprite;
+static TransformPtr bgTransform;
+static GameObjectPtr background;
 
 static TransformPtr objTransform;
 static PhysicsPtr objPhysics;
@@ -78,27 +83,24 @@ static BoundingBoxPtr BoxNumber;
 static BoundingBoxPtr Test;
 
 static Vector2D Empty = { 0 };
-static Vector2D EarthPos = { 0.0f, -500.0f };
+static Vector2D EarthPos = { 300.0f, 300.0f };
 static Vector2D Velocity = { 0.0f, 0.0f };
 static Vector2D Acceleration = { 0.0f, 0.0f };
 static Vector2D PlayerHalfSize = { 50.0f, 50.0f };
 static Vector2D EarthHalfSize = { 300.0f, 300.0f };
-static Vector2D ShotHalfSize = { 25.0f,25.0f };
 static Vector2D TestStupid = { 0.0f, -200.0f };
 static Vector2D tileScale = { 0.1f, 0.1f };
 static Vector2D dummy = { 60.0f, -60.0f }; // EarthSize times the scale (in this case it is 0.1)
 static bool IsJumping = 0;
 static Vector2D Result = { 0 };
 static Vector2D Distance = { 0 };
-
 //------------------------------------------------------------------------------
 // Private Function Declarations:
 //------------------------------------------------------------------------------
 
 static GameObjectPtr GameStateLevel2CreateCharacter(void);
 static GameObjectPtr GameStateLevel2CreateEarth(void);
-static void GameStateLevel2CreateBulletArchetype(void);
-static GameObjectPtr GameStateLevel2CreateShot(void);
+static void GameStateAsteroidsCreateBulletArchetype(void);
 
 //------------------------------------------------------------------------------
 // Public Functions:
@@ -110,20 +112,35 @@ void GameStateLevel1Load()
 
 	pMesh = MeshCreateQuad(50, 50, 0.5, 0.5, "Mesh4x4");
 	pMesh2 = MeshCreateQuad(300, 300, 1, 1, "Mesh1x1");
-	pMesh3 = MeshCreateQuad(50, 25, .5, .25, "Mesh1x1");
+	pMeshBullet = MeshCreateQuad(50, 25, .5, .25, "Mesh1x1");
+  bgMesh = MeshCreateQuad(1000, 1000, 1, 1, "Mesh1x1");
 	pTexture = AEGfxTextureLoad("Assets\\Knight.png");
 	pTexture2 = AEGfxTextureLoad("Assets\\Brick.png");
 	pTexture3 = AEGfxTextureLoad("Assets\\runningcat.png");
+  bgTexture = AEGfxTextureLoad("Assets\\PlanetTexture.png");
 	pSSource = SpriteSourceCreate(2, 2, pTexture);
 	pSSource2 = SpriteSourceCreate(1, 1, pTexture2);
 	pSSource3 = SpriteSourceCreate(1, 1, pTexture3);
+  bgSSource = SpriteSourceCreate(1, 1, bgTexture);
 }
-
-
 
 void GameStateLevel1Init()
 {
 	TraceMessage("Level1: Init");
+
+  background = GameObjectCreate("BG");
+  bgTransform = CreateTransform();
+  TransformSetRotation(bgTransform, 0);
+  TransformSetScale(bgTransform, EarthPos);
+  bgSprite = SpriteCreate("BG");
+  SpriteSetMesh(bgSprite, bgMesh);
+  SpriteSetSpriteSource(bgSprite, bgSSource);
+  GameObjectSetTransform(background, bgTransform);
+  GameObjectSetSprite(background, bgSprite);
+
+  GameStateAsteroidsCreateBulletArchetype();
+
+  Vector2DSet(&Empty, 0.0f, 0.0f);
 	int i = 0;
 	Vector2DSet(&Distance, EarthHalfSize.x * tileScale.x * 2.0f, 0.0f);
 	Character = GameStateLevel2CreateCharacter();
@@ -167,9 +184,10 @@ void GameStateLevel1Init()
 	pAnimation = AnimationCreate(pSprite);
 	AnimationPlay(pAnimation, 3, 0.25f, true);
 	*/
-	
+
 	//Set Alpha Engine BG to white(1,1,1)
-	AEGfxSetBackgroundColor(0.8f, 0.3f, 0.1f);
+  AEGfxSetBackgroundColor(0.8f, 0.3f, 0.1f);
+
 	//Set AEG blend mode to blend
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 	/*
@@ -192,24 +210,18 @@ void GameStateLevel1Update(float dt)
 	{
 		GameStateManagerSetNextState(GsRestart);
 	}
-	if (AEInputCheckCurr(VK_SPACE))
-	{
-    GameStateLevel2CreateShot();
-		Vector2DSet(&velocity, 500.0f, 0.0f);
-		PhysicsVelocity(GameObjectGetPhysics(Shot), &velocity);
-	}
 
-	if (AEInputCheckCurr(VK_RIGHT) &&  
+	if (AEInputCheckCurr('D') &&  
 		CollisionCheckCollidedSide(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(collidedTile)) != 1)
 	{
-		Vector2DSet(&velocity, 3.0f, 0.0f);
+		Vector2DSet(&velocity, 5.0f, 0.0f);
 		TransformVelocity(GameObjectGetTransform(Character), velocity);
 		SetAnimationIsRunning(GameObjectGetAnimation(Character), 1);
 	}
-	else if (AEInputCheckCurr(VK_LEFT) &&
+	else if (AEInputCheckCurr('A') &&
 		CollisionCheckCollidedSide(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(collidedTile)) != 3)
 	{
-		Vector2DSet(&velocity, -3.0f, 0.0f);
+		Vector2DSet(&velocity, -5.0f, 0.0f);
 		TransformVelocity(GameObjectGetTransform(Character), velocity);
 		SetAnimationIsRunning(GameObjectGetAnimation(Character), 1);
 	}
@@ -232,7 +244,7 @@ void GameStateLevel1Update(float dt)
 		
 		SetPhysicsTranslation(GameObjectGetPhysics(Character), Result);
 
-		if (AEInputCheckCurr(VK_UP))
+		if (AEInputCheckCurr('W'))
 		{
 			Vector2DSet(&velocity, 0.0f, 220.0f);
 			Vector2DSet(&acceleration, 0.0f, -300.0f);
@@ -265,15 +277,15 @@ void GameStateLevel1Update(float dt)
 	}
 
 
-	PhysicsUpdate(GameObjectGetPhysics(Shot), GameObjectGetTransform(Shot), dt);
 	//UpdateBoundingBox(GameObjectGetBoundingBox(Character), GetOldTranslation(GameObjectGetPhysics(Character)));
 
 	GameObjectUpdate(Character, dt);
 	GameObjectFactoryUpdate(dt);
 
-	GameObjectDraw(Shot);
+  
 	GameObjectDraw(Character);
 	GameObjectFactoryDraw();
+  GameObjectDraw(background);
 
 	AEGfxSetCamPosition(GetOldTranslation(GameObjectGetPhysics(Character)).x, GetOldTranslation(GameObjectGetPhysics(Character)).y);
 }
@@ -281,12 +293,14 @@ void GameStateLevel1Update(float dt)
 void GameStateLevel1Shutdown()
 {
 	TraceMessage("Level1: Shutdown");
+  GameObjectManagerShutdown();
 	GameObjectFactoryFree();
 	SpriteSourceFree(&pSSource);
 	SpriteSourceFree(&pSSource2);
 	SpriteSourceFree(&pSSource3);
+  SpriteSourceFree(&bgSSource);
 	GameObjectFree(&Character);
-	GameObjectFree(&Shot);
+  GameObjectFree(&background);
 }
 
 void GameStateLevel1Unload()
@@ -297,7 +311,9 @@ void GameStateLevel1Unload()
 	AEGfxTextureUnload(pTexture2);
 	AEGfxMeshFree(pMesh2);
 	AEGfxTextureUnload(pTexture3);
-	AEGfxMeshFree(pMesh3);
+  AEGfxMeshFree(pMeshBullet);
+  AEGfxTextureUnload(bgTexture);
+  AEGfxMeshFree(bgMesh);
 }
 
 
@@ -316,36 +332,41 @@ static GameObjectPtr GameStateLevel2CreateCharacter(void)
 	TransformSetScale(GameObjectGetTransform(gObject), Scale);
 	TransformSetRotation(GameObjectGetTransform(gObject), 0);
 	TransformSetTranslation(GameObjectGetTransform(gObject), &playerSpawn);
+
 	SpritePtr CharacterSprite = SpriteCreate("Character Sprite");
 	SpriteSetMesh(CharacterSprite, pMesh);
 	SpriteSetSpriteSource(CharacterSprite, pSSource);
 	GameObjectSetSprite(gObject, CharacterSprite);
+
 	GameObjectSetAnimation(gObject, AnimationCreate(CharacterSprite));
-	AnimationPlay(GameObjectGetAnimation(gObject), 3, 0.15f, true);
+	AnimationPlay(GameObjectGetAnimation(gObject), 3, 0.1f, true);
 	GameObjectSetPhysics(gObject, PhysicsCreate());
 	GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, PlayerHalfSize));
+  GameObjectSetBehavior(gObject, BehaviorPlayerCreate());
 
 	return gObject;
 
 }
 
-static GameObjectPtr GameStateLevel2CreateShot(void)
+static void GameStateAsteroidsCreateBulletArchetype(void)
 {
-	const Vector2D Scale = { 1.0f, 1.0f };
+  Vector2D scale = { 1, 1 };
+  GameObjectPtr bullet = GameObjectCreate("Bullet");
+  TransformPtr trBullet = TransformCreate(0, 0);
+  SpritePtr sprBullet = SpriteCreate("Bullet Sprite");
+  PhysicsPtr phyByllet = PhysicsCreate();
+  BehaviorPtr bBullet = BehaviorBulletCreate();
 
-	GameObjectPtr gObject = GameObjectCreate("Shot");
-	GameObjectSetTransform(gObject, CreateTransform());
-	TransformSetScale(GameObjectGetTransform(gObject), Scale);
-	TransformSetRotation(GameObjectGetTransform(gObject), 0);
-	SpritePtr ShotSprite = SpriteCreate("Shot Sprite");
-	SpriteSetMesh(ShotSprite, pMesh3);
-	SpriteSetSpriteSource(ShotSprite, pSSource3);
-	GameObjectSetSprite(gObject, ShotSprite);
-	GameObjectSetPhysics(gObject, PhysicsCreate());
-	Vector2D translation = GetOldTranslation(GameObjectGetPhysics(Character));
-	SetPhysicsTranslation(GameObjectGetPhysics(gObject), translation);
-	TransformSetTranslation(GameObjectGetTransform(gObject), &translation);
-	GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, ShotHalfSize));
+  TransformSetRotation(trBullet, 0);
+  TransformSetScale(trBullet, scale);
 
-	return gObject;
+  SpriteSetSpriteSource(sprBullet, pSSource3);
+  SpriteSetMesh(sprBullet, pMeshBullet);
+
+  GameObjectSetTransform(bullet, trBullet);
+  GameObjectSetSprite(bullet, sprBullet);
+  GameObjectSetPhysics(bullet, phyByllet);
+  GameObjectSetBehavior(bullet, bBullet);
+
+  GameObjectManagerAddArchetype(bullet);
 }

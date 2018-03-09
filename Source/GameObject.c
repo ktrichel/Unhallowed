@@ -31,8 +31,6 @@ typedef struct GameObject
   BehaviorPtr behavior;
 
 	int health;
-
-  float timer;
 }GameObject;
 
 //------------------------------------------------------------------------------

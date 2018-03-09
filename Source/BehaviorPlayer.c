@@ -22,18 +22,18 @@
 // Private Consts:
 //------------------------------------------------------------------------------
 
-enum Ship
+enum Player
 {
-  cSpaceshipInvalid,
-  cSpaceshipIdle,
-  cSpaceshipThrust
+  cSpaceplayerInvalid,
+  cSpaceplayerIdle,
+  cSpaceplayerThrust
 };
 
-static const float spaceshipAcceleration = 150.0f;
-static const float spaceshipSpeedMax = 500.0f;
-static const float spaceshipTurnRateMax = PI / 1.5f;
-static const float spaceshipWeaponCooldownTime = 0.032f;
-static const float spaceshipWeaponBulletSpeed = 750.0f;
+static const float playerAcceleration = 150.0f;
+static const float playerSpeedMax = 500.0f;
+static const float playerTurnRateMax = PI / 1.5f;
+static const float playerWeaponCooldownTime = 0.25f;
+static const float playerWeaponBulletSpeed = 750.0f;
 
 
 //------------------------------------------------------------------------------
@@ -61,15 +61,15 @@ static void BehaviorPlayerSpawnBullet(BehaviorPtr behavior);
 // Public Functions:
 //------------------------------------------------------------------------------
 
-// Dynamically allocate a new (Spaceship) behavior component.
+// Dynamically allocate a new (Spaceplayer) behavior component.
 // (Hint: Use calloc() to ensure that all member variables are initialized to 0.)
 BehaviorPtr BehaviorPlayerCreate(void)
 {
   BehaviorPtr behavior = calloc(1, sizeof(Behavior));
   if (behavior)
   {
-    behavior->stateCurr = cSpaceshipInvalid;
-    behavior->stateNext = cSpaceshipIdle;
+    behavior->stateCurr = cSpaceplayerInvalid;
+    behavior->stateNext = cSpaceplayerIdle;
     behavior->onInit = BehaviorPlayerInit;
     behavior->onExit = BehaviorPlayerExit;
     behavior->onUpdate = BehaviorPlayerUpdate;
@@ -97,22 +97,19 @@ void BehaviorPlayerUpdate(BehaviorPtr behavior, float dt)
 {
   switch (behavior->stateCurr)
   {
-  case cSpaceshipIdle:
-    BehaviorPlayerUpdateRotation(behavior, dt);
+  case cSpaceplayerIdle:
     BehaviorPlayerUpdateWeapon(behavior, dt);
-    if (AEInputCheckTriggered(VK_UP))
+   /* if (AEInputCheckTriggered(VK_UP))
     {
-      behavior->stateNext = cSpaceshipThrust;
-    }
+      behavior->stateNext = cSpaceplayerThrust;
+    }*/
     break;
-  case cSpaceshipThrust:
-    BehaviorPlayerUpdateRotation(behavior, dt);
-    BehaviorPlayerUpdateVelocity(behavior, dt);
+  case cSpaceplayerThrust:
     BehaviorPlayerUpdateWeapon(behavior, dt);
-    if (!AEInputCheckCurr(VK_UP))
+    /*if (!AEInputCheckCurr(VK_UP))
     {
-      behavior->stateNext = cSpaceshipIdle;
-    }
+      behavior->stateNext = cSpaceplayerIdle;
+    }*/
     break;
   default:
     break;
@@ -133,54 +130,6 @@ void BehaviorPlayerExit(BehaviorPtr behavior)
 // Private Functions:
 //------------------------------------------------------------------------------
 
-void BehaviorPlayerUpdateRotation(BehaviorPtr behavior, float dt)
-{
-  UNREFERENCED_PARAMETER(dt);
-
-  PhysicsPtr physics = GameObjectGetPhysics(behavior->parent);
-
-  if (AEInputCheckCurr(VK_LEFT))
-  {
-    PhysicsSetRotationalVelocity(physics, spaceshipTurnRateMax);
-  }
-  else if (AEInputCheckCurr(VK_RIGHT))
-  {
-    PhysicsSetRotationalVelocity(physics, -spaceshipTurnRateMax);
-  }
-  else
-  {
-    PhysicsSetRotationalVelocity(physics, 0);
-  }
-}
-
-void BehaviorPlayerUpdateVelocity(BehaviorPtr behavior, float dt)
-{
-	Vector2D rotate = { 0 };
-  Vector2D velocity = { 0 };
-  float speed = 0;
-  TransformPtr transform = GameObjectGetTransform(behavior->parent);
-  PhysicsPtr physics = GameObjectGetPhysics(behavior->parent);
-
-  if (transform && physics)
-  {
-	  float rotation = TransformGetRotation(transform);
-	  Vector2DFromAngleRad(&rotate, rotation);
-
-    velocity = PhysicsGetVelocity(physics);
-    Vector2DScale(&rotate, &rotate, spaceshipAcceleration);
-    Vector2DScale(&rotate, &rotate, dt);
-    Vector2DAdd(&velocity, &velocity, &rotate);
-
-    speed = Vector2DLength(&velocity);
-    if (speed > spaceshipSpeedMax)
-    {
-      Vector2DScale(&velocity, &velocity, (spaceshipSpeedMax / speed));
-    }
-
-    PhysicsVelocity(physics, &velocity);
-  }
-}
-
 void BehaviorPlayerUpdateWeapon(BehaviorPtr behavior, float dt)
 {
   if (behavior->timer > 0)
@@ -191,12 +140,12 @@ void BehaviorPlayerUpdateWeapon(BehaviorPtr behavior, float dt)
       behavior->timer = 0;
     }
   }
-  if (AEInputCheckCurr(VK_SPACE))
+  if (AEInputCheckCurr(VK_LBUTTON))
   {
     if (behavior->timer <= 0)
     {
       BehaviorPlayerSpawnBullet(behavior);
-      behavior->timer = spaceshipWeaponCooldownTime;
+      behavior->timer = playerWeaponCooldownTime;
     }
   }
 }
@@ -205,22 +154,37 @@ void BehaviorPlayerSpawnBullet(BehaviorPtr behavior)
 {
   GameObjectPtr bullet = GameObjectManagerGetArchetype("Bullet");
 
+  s32 mouseX;
+  s32 mouseY;
+  float worldX;
+  float worldY;
+  Vector2D Mouse;
+  Vector2D Normal;
+
   if (bullet)
   {
+    AEInputGetCursorPosition(&mouseX, &mouseY);
+    AEGfxConvertScreenCoordinatesToWorld((float)mouseX, (float)mouseY, &worldX, &worldY);
+
     GameObjectPtr clone = GameObjectClone(bullet);
     TransformPtr tClone = GameObjectGetTransform(clone);
-    TransformPtr ship = GameObjectGetTransform(behavior->parent);
-    float shipRotation = TransformGetRotation(ship);
-    Vector2D shipTranslate = *TransformGetTranslation(ship);
-    TransformSetTranslation(tClone, &shipTranslate);
-    TransformSetRotation(tClone, shipRotation);
+    TransformPtr player = GameObjectGetTransform(behavior->parent);
+    float playerRotation = TransformGetRotation(player);
+    Vector2D playerTranslate = *TransformGetTranslation(player);
+    Vector2DSet(&Mouse, worldX, worldY);
+    Vector2DSub(&Normal, &Mouse, &playerTranslate);
+    Vector2DNormalize(&Normal, &Normal);
+    float angle = atan2f(Normal.y, Normal.x);
+    Vector2DScale(&Normal, &Normal, playerWeaponBulletSpeed);
+    TransformSetTranslation(tClone, &playerTranslate);
+    TransformSetRotation(tClone, angle);
     GameObjectSetTransform(clone, tClone);
     Vector2D rotate = { 0 };
-    Vector2DFromAngleRad(&rotate, shipRotation);
+    Vector2DFromAngleRad(&rotate, playerRotation);
     PhysicsPtr pClone = GameObjectGetPhysics(clone);
     Vector2D velocity = { 0 };
-    Vector2DScale(&velocity, &rotate, spaceshipWeaponBulletSpeed);
-    PhysicsVelocity(pClone, &velocity);
+    Vector2DScale(&velocity, &rotate, playerWeaponBulletSpeed);
+    PhysicsVelocity(pClone, &Normal);
     GameObjectSetPhysics(clone, pClone);
 
     GameObjectManagerAdd(clone);

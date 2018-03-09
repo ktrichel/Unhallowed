@@ -13,9 +13,9 @@
 
 typedef struct Transform
 {
-	AEVec2 translation;
+	Vector2D translation;
 	float rotation;
-	AEVec2 scale;
+	Vector2D scale;
 
 	AEMtx33 matrix;
 
@@ -24,10 +24,11 @@ typedef struct Transform
 
 typedef struct Physics
 {
-	AEVec2 oldTranslation;
-	AEVec2 acceleration;
-	AEVec2 velocity;
-	float inverseMass;
+	Vector2D oldTranslation;
+	Vector2D acceleration;
+	Vector2D velocity;
+  float rotationalVelocity;
+  float inverseMass;
 }Physics;
 
 //------------------------------------------------------------------------------
@@ -51,11 +52,11 @@ void PhysicsUpdate(PhysicsPtr physics, TransformPtr transform, float dt)
 	if (physics && transform)
 	{
 		physics->oldTranslation = *TransformGetTranslation(transform);
-		AEVec2 newtranslation = physics->oldTranslation;
+		Vector2D newtranslation = physics->oldTranslation;
 		Vector2DScaleAdd(&physics->velocity, &physics->acceleration, &physics->velocity, dt);
 		Vector2DScaleAdd(&newtranslation, &physics->velocity, &physics->oldTranslation, dt);
 
-		const AEVec2 * translate = &newtranslation;
+		const Vector2D * translate = &newtranslation;
 		float rotation = TransformGetRotation(transform);
 
 		TransformSetRotation(transform, rotation);
@@ -64,7 +65,7 @@ void PhysicsUpdate(PhysicsPtr physics, TransformPtr transform, float dt)
 
 }
 
-void PhysicsAcceleration(PhysicsPtr physics, AEVec2 acceleration)
+void PhysicsAcceleration(PhysicsPtr physics, Vector2D acceleration)
 {
 	if (physics)
 	{
@@ -76,7 +77,7 @@ void PhysicsAcceleration(PhysicsPtr physics, AEVec2 acceleration)
 // previous implementation of create physics, you can use setters instead but I'm leaving the code
 // here so it can run before I continue cleaning things up
 // !!! DO NOT CALL THIS !!!
-PhysicsPtr CreatePhysics(AEVec2 OldTranslation, AEVec2 Acceleration, AEVec2 Velocity, float mass)
+PhysicsPtr CreatePhysics(Vector2D OldTranslation, Vector2D Acceleration, Vector2D Velocity, float mass)
 {
 	PhysicsPtr physics = calloc(1, sizeof(Physics));
 	if (physics)
@@ -134,6 +135,48 @@ TransformPtr CreateTransform(void)
 	return NULL;
 }
 
+// Dynamically allocate a clone of an existing physics component.
+// Params:
+//	 other = Pointer to the component to be cloned.
+// Returns:
+//	 If 'other' is valid and the memory allocation was successful,
+//	   then return a pointer to the cloned component,
+//	   else return NULL.
+PhysicsPtr PhysicsClone(const PhysicsPtr other)
+{
+  if (other)
+  {
+    PhysicsPtr physics = calloc(1, sizeof(Physics));
+    if (physics)
+    {
+      *physics = *other;
+      return physics;
+    }
+  }
+  return NULL;
+}
+
+// Dynamically allocate a clone of an existing transform.
+// Params:
+//	 other = Pointer to the component to be cloned.
+// Returns:
+//	 If 'other' is valid and the memory allocation was successful,
+//	   then return a pointer to the cloned component,
+//	   else return NULL.
+TransformPtr TransformClone(const TransformPtr other)
+{
+  if (other)
+  {
+    TransformPtr transform = calloc(1, sizeof(Transform));
+    if (transform)
+    {
+      *transform = *other;
+      return transform;
+    }
+  }
+  return NULL;
+}
+
 void FreeTransform(TransformPtr * transform)
 {
 	free(*transform);
@@ -146,7 +189,7 @@ void FreePhysics(PhysicsPtr * physics)
 	*physics = NULL;
 }
 
-void TransformVelocity(TransformPtr transform, AEVec2 velocity)
+void TransformVelocity(TransformPtr transform, Vector2D velocity)
 {
 	if (transform)
 	{
@@ -155,16 +198,16 @@ void TransformVelocity(TransformPtr transform, AEVec2 velocity)
 	}
 }
 
-void PhysicsVelocity(PhysicsPtr physics, AEVec2 velocity)
+void PhysicsVelocity(PhysicsPtr physics, const Vector2D *velocity)
 {
 	if (physics)
 	{
-		physics->velocity = velocity;
+		physics->velocity = *velocity;
 	}
 }
-AEVec2 GetOldTranslation(PhysicsPtr physics)
+Vector2D GetOldTranslation(PhysicsPtr physics)
 {
-	AEVec2 empty = { 0 };
+	Vector2D empty = { 0 };
 	if (physics)
 	{
 		return physics->oldTranslation;
@@ -172,7 +215,7 @@ AEVec2 GetOldTranslation(PhysicsPtr physics)
 	return empty;
 }
 
-void SetPhysicsTranslation(PhysicsPtr physics, AEVec2 translation)
+void SetPhysicsTranslation(PhysicsPtr physics, Vector2D translation)
 {
   if (physics)
   {
@@ -183,7 +226,7 @@ void SetPhysicsTranslation(PhysicsPtr physics, AEVec2 translation)
 // Params:
 //	 transform = Pointer to the transform component.
 //	 translation = Pointer to a translation vector.
-void TransformSetTranslation(TransformPtr transform, const AEVec2 * translation)
+void TransformSetTranslation(TransformPtr transform, const Vector2D * translation)
 {
 	if (transform && translation)
 	{
@@ -193,7 +236,7 @@ void TransformSetTranslation(TransformPtr transform, const AEVec2 * translation)
 	}
 }
 
-void TransformSetScale(TransformPtr transform, AEVec2 scale)
+void TransformSetScale(TransformPtr transform, Vector2D scale)
 {
 	if (transform)
 	{
@@ -246,7 +289,7 @@ AEMtx33 * TransformGetMatrix(const TransformPtr transform)
 //	 If the transform pointer is valid,
 //		then return a pointer to the component's translation structure,
 //		else return a NULL pointer.
-const AEVec2 * TransformGetTranslation(const TransformPtr transform)
+const Vector2D * TransformGetTranslation(const TransformPtr transform)
 {
 	if (transform)
 	{
@@ -264,15 +307,44 @@ float TransformGetRotation(const TransformPtr transform)
 	return 0;
 }
 
-AEVec2 PhysicsGetVelocity(PhysicsPtr physics)
+Vector2D PhysicsGetVelocity(PhysicsPtr physics)
 {
-	AEVec2 Empty = { 0 };
+	Vector2D Empty = { 0 };
 	if (physics)
 	{
 		return physics->velocity;
 	}
 	return Empty;
 }
+
+// Get the rotational velocity of a physics component.
+// Params:
+//	 physics = Pointer to the physics component.
+// Returns:
+//	 If the physics pointer is valid,
+//		then return the component's rotational velocity value,
+//		else return 0.0f.
+float PhysicsGetRotationalVelocity(PhysicsPtr physics)
+{
+  if (physics)
+  {
+    return physics->rotationalVelocity;
+  }
+  return 0.0f;
+}
+
+// Set the rotational velocity of a physics component.
+// Params:
+//	 physics = Pointer to the physics component.
+//	 rotationalVelocity = The new rotational velocity.
+void PhysicsSetRotationalVelocity(PhysicsPtr physics, float rotationalVelocity)
+{
+  if (physics)
+  {
+    physics->rotationalVelocity = rotationalVelocity;
+  }
+}
+
 //------------------------------------------------------------------------------
 // Private Functions:
 //------------------------------------------------------------------------------

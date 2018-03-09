@@ -10,6 +10,11 @@
 //------------------------------------------------------------------------------
 // Private Structures:
 //------------------------------------------------------------------------------
+typedef struct
+{
+  float mX;
+  float mY;
+}TextureOffset;
 
 // You are free to change the contents of this structure as long as you do not
 //   change the public interface declared in the header.
@@ -73,6 +78,28 @@ AnimationPtr AnimationCreate(SpritePtr sprite)
 		return Animate;
 	}
 	return NULL;
+}
+
+// Dynamically allocate a clone of an existing animation.
+// Params:
+//	 other = Pointer to the component to be cloned.
+// Returns:
+//	 If 'other' is valid and the memory allocation was successful,
+//	   then return a pointer to the cloned component,
+//	   else return NULL.
+AnimationPtr AnimationClone(const AnimationPtr other, SpritePtr sprite)
+{
+  if (other && sprite)
+  {
+    AnimationPtr animation = calloc(1, sizeof(Animation));
+    if (animation)
+    {
+      *animation = *other;
+      animation->sprite = sprite;
+      return animation;
+    }
+  }
+  return NULL;
 }
 
 void AnimationFree(AnimationPtr * animation)

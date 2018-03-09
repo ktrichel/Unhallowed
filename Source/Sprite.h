@@ -27,7 +27,7 @@ extern "C" {
 //------------------------------------------------------------------------------
 
 typedef struct AEGfxVertexList AEGfxVertexList;
-typedef struct AEVec2 AEVec2;
+typedef struct Vector2D Vector2D;
 typedef struct SpriteSource * SpriteSourcePtr;
 typedef struct Transform * TransformPtr;
 
@@ -83,6 +83,15 @@ typedef struct Sprite
 //	   then return a pointer to the allocated memory,
 //	   else return NULL.
 SpritePtr SpriteCreate(const char * name);
+
+// Dynamically allocate a clone of an existing sprite.
+// Params:
+//	 other = Pointer to the component to be cloned.
+// Returns:
+//	 If 'other' is valid and the memory allocation was successful,
+//	   then return a pointer to the cloned component,
+//	   else return NULL.
+SpritePtr SpriteClone(const SpritePtr other);
 
 // Free the memory associated with a sprite object.
 // (Also, set the sprite pointer to NULL.)

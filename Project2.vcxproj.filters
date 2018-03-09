@@ -16,14 +16,17 @@
     <Filter Include="Engine\GameObjects\Graphics">
       <UniqueIdentifier>{b4f05833-7b58-4457-94c2-d951b07921d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\GameObjects\Graphics\Physics">
+    <Filter Include="Engine\GameObjects\Behavior">
+      <UniqueIdentifier>{af664532-2926-44e6-ae64-768b8da3d6ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\GameObjects\Physics">
       <UniqueIdentifier>{892b6a25-f9ad-4441-bbb6-a2437b22a291}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\GameObjects\Transform">
-      <UniqueIdentifier>{72d14301-4367-4247-bd6b-c014873020ba}</UniqueIdentifier>
+    <Filter Include="Engine\GameObjects\Collision">
+      <UniqueIdentifier>{32af3c9f-cd61-407f-a3d5-3b59f3df1fbb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\GameObjects\Transform\Math">
-      <UniqueIdentifier>{29bd56ab-6e68-4e0e-81b7-f0995723a628}</UniqueIdentifier>
+    <Filter Include="Game\Behaviors">
+      <UniqueIdentifier>{d4e16b9b-bc72-45fd-90dd-c7e4bf196b59}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -71,11 +74,8 @@
     <ClCompile Include="Source\SpriteSource.c">
       <Filter>Engine\GameObjects\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Collision.c">
-      <Filter>Engine\GameObjects\Graphics\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Physics.c">
-      <Filter>Engine\GameObjects\Graphics\Physics</Filter>
+      <Filter>Engine\GameObjects\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Matrix2D.c">
       <Filter>Engine\GameObjects\Transform\Math</Filter>
@@ -96,6 +96,21 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameObjectFactory.c">
+      <Filter>Engine\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Behavior.c">
+      <Filter>Engine\GameObjects\Behavior</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Collision.c">
+      <Filter>Engine\GameObjects\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BehaviorBullet.c">
+      <Filter>Game\Behaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BehaviorPlayer.c">
+      <Filter>Game\Behaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjectManager.c">
       <Filter>Engine\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
@@ -149,11 +164,8 @@
     <ClInclude Include="Source\GameStateLevel2.h">
       <Filter>Game\GameStates</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Collision.h">
-      <Filter>Engine\GameObjects\Graphics\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Physics.h">
-      <Filter>Engine\GameObjects\Graphics\Physics</Filter>
+      <Filter>Engine\GameObjects\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Matrix2D.h">
       <Filter>Engine\GameObjects\Transform\Math</Filter>
@@ -174,6 +186,21 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObjectFactory.h">
+      <Filter>Engine\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Behavior.h">
+      <Filter>Engine\GameObjects\Behavior</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Collision.h">
+      <Filter>Engine\GameObjects\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BehaviorBullet.h">
+      <Filter>Game\Behaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BehaviorPlayer.h">
+      <Filter>Game\Behaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameObjectManager.h">
       <Filter>Engine\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>

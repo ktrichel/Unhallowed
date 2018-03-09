@@ -15,7 +15,7 @@ extern "C" {
 // Forward References:
 //------------------------------------------------------------------------------
 
-typedef struct AEVec2 AEVec2;
+typedef struct Vector2D Vector2D;
 typedef struct AEMtx33 AEMtx33;
 typedef struct Transform * TransformPtr;
 typedef struct Physics * PhysicsPtr;
@@ -40,11 +40,15 @@ TransformPtr CreateTransform(void);
 
 TransformPtr TransformCreate(float x, float y);
 
-PhysicsPtr CreatePhysics(AEVec2 OldTranslation, AEVec2 Acceleration, AEVec2 Velocity, float mass);
+PhysicsPtr CreatePhysics(Vector2D OldTranslation, Vector2D Acceleration, Vector2D Velocity, float mass);
 
-void TransformVelocity(TransformPtr transform, AEVec2 velocity);
+PhysicsPtr PhysicsClone(const PhysicsPtr other);
 
-void PhysicsVelocity(PhysicsPtr physics, AEVec2 velocity);
+TransformPtr TransformClone(const TransformPtr other);
+
+void TransformVelocity(TransformPtr transform, Vector2D velocity);
+
+void PhysicsVelocity(PhysicsPtr physics, const Vector2D * velocity);
 
 void FreePhysics(PhysicsPtr * physics);
 
@@ -52,13 +56,13 @@ void FreeTransform(TransformPtr * transform);
 
 void PhysicsUpdate(PhysicsPtr physics, TransformPtr transform, float dt);
 
-void PhysicsAcceleration(PhysicsPtr physics, AEVec2 acceleration);
+void PhysicsAcceleration(PhysicsPtr physics, Vector2D acceleration);
 
-AEVec2 GetOldTranslation(PhysicsPtr physics);
+Vector2D GetOldTranslation(PhysicsPtr physics);
 
-void SetPhysicsTranslation(PhysicsPtr physics, AEVec2 translation);
+void SetPhysicsTranslation(PhysicsPtr physics, Vector2D translation);
 
-void TransformSetScale(TransformPtr transform, AEVec2 scale);
+void TransformSetScale(TransformPtr transform, Vector2D scale);
 
 void TransformSetRotation(TransformPtr transform, float rotation);
 
@@ -70,13 +74,18 @@ PhysicsPtr PhysicsCreate(void);
 
 AEMtx33 * TransformGetMatrix(const TransformPtr transform);
 
-const AEVec2 * TransformGetTranslation(const TransformPtr transform);
+const Vector2D * TransformGetTranslation(const TransformPtr transform);
 
-void TransformSetTranslation(TransformPtr transform, const AEVec2 * translation);
+void TransformSetTranslation(TransformPtr transform, const Vector2D * translation);
 
 float TransformGetRotation(const TransformPtr transform);
 
-AEVec2 PhysicsGetVelocity(PhysicsPtr physics);
+Vector2D PhysicsGetVelocity(PhysicsPtr physics);
+
+float PhysicsGetRotationalVelocity(PhysicsPtr physics);
+
+void PhysicsSetRotationalVelocity(PhysicsPtr physics, float rotationalVelocity);
+
 //------------------------------------------------------------------------------
 
 #ifdef __cplusplus

@@ -32,6 +32,8 @@ typedef struct Sprite
 	// The mesh used to draw the sprite.
 	AEGfxVertexList * mesh;
 
+  TransformPtr transform;
+
 } Sprite;
 
 //------------------------------------------------------------------------------
@@ -69,6 +71,27 @@ SpritePtr SpriteCreate(const char * name)
 		return NewSprite;
 	}
 	return NULL;
+}
+
+// Dynamically allocate a clone of an existing sprite.
+// Params:
+//	 other = Pointer to the component to be cloned.
+// Returns:
+//	 If 'other' is valid and the memory allocation was successful,
+//	   then return a pointer to the cloned component,
+//	   else return NULL.
+SpritePtr SpriteClone(const SpritePtr other)
+{
+  if (other)
+  {
+    SpritePtr sprite = calloc(1, sizeof(Sprite));
+    if (sprite)
+    {
+      *sprite = *other;
+      return sprite;
+    }
+  }
+  return NULL;
 }
 
 void SpriteFree(SpritePtr * sprite)

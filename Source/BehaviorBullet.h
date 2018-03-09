@@ -1,3 +1,14 @@
+//------------------------------------------------------------------------------
+//
+// File Name:	BehaviorBullet.h
+// Author(s):	Doug Schilling (dschilling)
+// Project:		MyGame
+// Course:		CS230S18
+//
+// Copyright © 2018 DigiPen (USA) Corporation.
+//
+//------------------------------------------------------------------------------
+
 #pragma once
 
 //------------------------------------------------------------------------------
@@ -15,8 +26,7 @@ extern "C" {
 // Forward References:
 //------------------------------------------------------------------------------
 
-typedef struct Vector2D Vector2D;
-typedef struct BoundingBox * BoundingBoxPtr;
+typedef struct Behavior * BehaviorPtr;
 
 //------------------------------------------------------------------------------
 // Public Consts:
@@ -34,30 +44,33 @@ typedef struct BoundingBox * BoundingBoxPtr;
 // Public Functions:
 //------------------------------------------------------------------------------
 
-BoundingBoxPtr CreateBoundingBox(Vector2D position, Vector2D halfsize);
+// Dynamically allocate a new (Bullet) behavior component.
+// (Hint: Use calloc() to ensure that all member variables are initialized to 0.)
+BehaviorPtr BehaviorBulletCreate(void);
 
-Vector2D GetHalfSize(BoundingBoxPtr box);
+// Initialize the current state of the behavior component.
+// (Hint: Refer to the lecture notes on finite state machines (FSM).)
+// Params:
+//	 behavior = Pointer to the behavior component.
+void BehaviorBulletInit(BehaviorPtr behavior);
 
-	bool CollisionCheck(BoundingBoxPtr box1, BoundingBoxPtr box2);
+// Update the current state of the behavior component.
+// (Hint: Refer to the lecture notes on finite state machines (FSM).)
+// Params:
+//	 behavior = Pointer to the behavior component.
+//	 dt = Change in time (in seconds) since the last game loop.
+void BehaviorBulletUpdate(BehaviorPtr behavior, float dt);
 
-	bool CollisionCheckTop(BoundingBoxPtr box1, BoundingBoxPtr box2);
+// Exit the current state of the behavior component.
+// (Hint: Refer to the lecture notes on finite state machines (FSM).)
+// Params:
+//	 behavior = Pointer to the behavior component.
+//	 dt = Change in time (in seconds) since the last game loop.
+void BehaviorBulletExit(BehaviorPtr behavior);
 
-bool CollisionCheckRight(BoundingBoxPtr box1, BoundingBoxPtr box2);
-
-bool CollisionCheckDown(BoundingBoxPtr box1, BoundingBoxPtr box2);
-
-bool CollisionCheckLeft(BoundingBoxPtr box1, BoundingBoxPtr box2);
-
-// updates the position of the bounding box
-void UpdateBoundingBox(BoundingBoxPtr box, Vector2D position);
-
-void FreeBoundingBox(BoundingBoxPtr * box);
-
-void HalfsizeScale(BoundingBoxPtr box, Vector2D scale);
-
-int CollisionCheckCollidedSide(BoundingBoxPtr box1, BoundingBoxPtr box2);
 //------------------------------------------------------------------------------
 
 #ifdef __cplusplus
 }                       /* End of extern "C" { */
 #endif
+

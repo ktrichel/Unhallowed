@@ -24,6 +24,9 @@
 #include "Vector2D.h"
 #include "Matrix2D.h"
 #include "GameObjectFactory.h"
+#include "Behavior.h"
+#include "BehaviorBullet.h"
+#include "GameObjectManager.h"
 #include <AEEngine.h>
 #include <stdlib.h>
 
@@ -56,7 +59,7 @@ static AEGfxVertexList * pMesh3;
 static SpritePtr pSprite3;
 static SpriteSourcePtr pSSource3;
 static AnimationPtr pAnimation;
-static AEVec2 Position;
+static Vector2D Position;
 static GameObjectPtr Character;
 static GameObjectPtr Earth;
 static GameObjectPtr Shot;
@@ -66,6 +69,7 @@ static SpriteSourcePtr pSSource3;
 static AEGfxTexture * pTexture3;
 static AEGfxVertexList * pMesh3;
 
+static AEGfxVertexList*	pMeshBullet = NULL;
 
 static TransformPtr objTransform;
 static PhysicsPtr objPhysics;
@@ -73,19 +77,19 @@ static BoundingBoxPtr BoxEarth;
 static BoundingBoxPtr BoxNumber;
 static BoundingBoxPtr Test;
 
-static AEVec2 Empty = { 0 };
-static AEVec2 EarthPos = { 0.0f, -500.0f };
-static AEVec2 Velocity = { 0.0f, 0.0f };
-static AEVec2 Acceleration = { 0.0f, 0.0f };
-static AEVec2 PlayerHalfSize = { 50.0f, 50.0f };
-static AEVec2 EarthHalfSize = { 300.0f, 300.0f };
-static AEVec2 ShotHalfSize = { 25.0f,25.0f };
-static AEVec2 TestStupid = { 0.0f, -200.0f };
-static AEVec2 tileScale = { 0.1f, 0.1f };
-static AEVec2 dummy = { 60.0f, -60.0f }; // EarthSize times the scale (in this case it is 0.1)
+static Vector2D Empty = { 0 };
+static Vector2D EarthPos = { 0.0f, -500.0f };
+static Vector2D Velocity = { 0.0f, 0.0f };
+static Vector2D Acceleration = { 0.0f, 0.0f };
+static Vector2D PlayerHalfSize = { 50.0f, 50.0f };
+static Vector2D EarthHalfSize = { 300.0f, 300.0f };
+static Vector2D ShotHalfSize = { 25.0f,25.0f };
+static Vector2D TestStupid = { 0.0f, -200.0f };
+static Vector2D tileScale = { 0.1f, 0.1f };
+static Vector2D dummy = { 60.0f, -60.0f }; // EarthSize times the scale (in this case it is 0.1)
 static bool IsJumping = 0;
-static AEVec2 Result = { 0 };
-static AEVec2 Distance = { 0 };
+static Vector2D Result = { 0 };
+static Vector2D Distance = { 0 };
 
 //------------------------------------------------------------------------------
 // Private Function Declarations:
@@ -93,6 +97,7 @@ static AEVec2 Distance = { 0 };
 
 static GameObjectPtr GameStateLevel2CreateCharacter(void);
 static GameObjectPtr GameStateLevel2CreateEarth(void);
+static void GameStateLevel2CreateBulletArchetype(void);
 static GameObjectPtr GameStateLevel2CreateShot(void);
 
 //------------------------------------------------------------------------------
@@ -103,13 +108,13 @@ void GameStateLevel1Load()
 {
 	TraceMessage("Level1: Load");
 
-	pMesh = MeshCreateQuad(50, 50, 0.25, 0.25, "Mesh4x4");
+	pMesh = MeshCreateQuad(50, 50, 0.5, 0.5, "Mesh4x4");
 	pMesh2 = MeshCreateQuad(300, 300, 1, 1, "Mesh1x1");
 	pMesh3 = MeshCreateQuad(50, 25, .5, .25, "Mesh1x1");
-	pTexture = AEGfxTextureLoad("Assets\\Hexidecimal.png");
-	pTexture2 = AEGfxTextureLoad("Assets\\PlanetTexture.png");
+	pTexture = AEGfxTextureLoad("Assets\\Knight.png");
+	pTexture2 = AEGfxTextureLoad("Assets\\Brick.png");
 	pTexture3 = AEGfxTextureLoad("Assets\\runningcat.png");
-	pSSource = SpriteSourceCreate(4, 4, pTexture);
+	pSSource = SpriteSourceCreate(2, 2, pTexture);
 	pSSource2 = SpriteSourceCreate(1, 1, pTexture2);
 	pSSource3 = SpriteSourceCreate(1, 1, pTexture3);
 }
@@ -177,8 +182,8 @@ void GameStateLevel1Init()
 
 void GameStateLevel1Update(float dt)
 {
-	AEVec2 velocity = { 0 };
-	AEVec2 acceleration = { 0 };
+	Vector2D velocity = { 0 };
+	Vector2D acceleration = { 0 };
 	TraceMessage("Level1: Update");
 
 	GameObjectPtr collidedTile = GameObjectFactoryCollision(Character);
@@ -189,9 +194,9 @@ void GameStateLevel1Update(float dt)
 	}
 	if (AEInputCheckCurr(VK_SPACE))
 	{
-		Shot = GameStateLevel2CreateShot();
+    GameStateLevel2CreateShot();
 		Vector2DSet(&velocity, 500.0f, 0.0f);
-		PhysicsVelocity(GameObjectGetPhysics(Shot), velocity);
+		PhysicsVelocity(GameObjectGetPhysics(Shot), &velocity);
 	}
 
 	if (AEInputCheckCurr(VK_RIGHT) &&  
@@ -220,7 +225,7 @@ void GameStateLevel1Update(float dt)
 
 		Vector2DSet(&acceleration, 0.0f, 0.0f);
 		PhysicsAcceleration(GameObjectGetPhysics(Character), acceleration);
-		PhysicsVelocity(GameObjectGetPhysics(Character), velocity);
+		PhysicsVelocity(GameObjectGetPhysics(Character), &velocity);
 		Result = GetOldTranslation(GameObjectGetPhysics(collidedTile));
 		Vector2DAdd(&Result, &Result, &dummy);
 		Vector2DNeg(&Result, &Result);
@@ -234,7 +239,7 @@ void GameStateLevel1Update(float dt)
 			AnimationUpdate(GameObjectGetAnimation(Character), dt);
 			IsJumping = 1;
 			PhysicsAcceleration(GameObjectGetPhysics(Character), acceleration);
-			PhysicsVelocity(GameObjectGetPhysics(Character), velocity);
+			PhysicsVelocity(GameObjectGetPhysics(Character), &velocity);
 			//TransformVelocity(objTransform, 0.0f, 3.0f);
 		}
 
@@ -296,14 +301,15 @@ void GameStateLevel1Unload()
 }
 
 
+
 //------------------------------------------------------------------------------
 // Private Functions:
 //------------------------------------------------------------------------------
 
 static GameObjectPtr GameStateLevel2CreateCharacter(void)
 {
-	const AEVec2 Scale = { 1.0f, 1.0f };
-	const AEVec2 playerSpawn = { 300.0f, 300.0f };
+	const Vector2D Scale = { 1.0f, 1.0f };
+	const Vector2D playerSpawn = { 100.0f, 100.0f };
 
 	GameObjectPtr gObject = GameObjectCreate("Character");
 	GameObjectSetTransform(gObject, CreateTransform());
@@ -315,7 +321,7 @@ static GameObjectPtr GameStateLevel2CreateCharacter(void)
 	SpriteSetSpriteSource(CharacterSprite, pSSource);
 	GameObjectSetSprite(gObject, CharacterSprite);
 	GameObjectSetAnimation(gObject, AnimationCreate(CharacterSprite));
-	AnimationPlay(GameObjectGetAnimation(gObject), 3, 0.25, true);
+	AnimationPlay(GameObjectGetAnimation(gObject), 3, 0.15f, true);
 	GameObjectSetPhysics(gObject, PhysicsCreate());
 	GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, PlayerHalfSize));
 
@@ -325,7 +331,7 @@ static GameObjectPtr GameStateLevel2CreateCharacter(void)
 
 static GameObjectPtr GameStateLevel2CreateShot(void)
 {
-	const AEVec2 Scale = { 1.0f, 1.0f };
+	const Vector2D Scale = { 1.0f, 1.0f };
 
 	GameObjectPtr gObject = GameObjectCreate("Shot");
 	GameObjectSetTransform(gObject, CreateTransform());
@@ -336,7 +342,7 @@ static GameObjectPtr GameStateLevel2CreateShot(void)
 	SpriteSetSpriteSource(ShotSprite, pSSource3);
 	GameObjectSetSprite(gObject, ShotSprite);
 	GameObjectSetPhysics(gObject, PhysicsCreate());
-	AEVec2 translation = GetOldTranslation(GameObjectGetPhysics(Character));
+	Vector2D translation = GetOldTranslation(GameObjectGetPhysics(Character));
 	SetPhysicsTranslation(GameObjectGetPhysics(gObject), translation);
 	TransformSetTranslation(GameObjectGetTransform(gObject), &translation);
 	GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, ShotHalfSize));

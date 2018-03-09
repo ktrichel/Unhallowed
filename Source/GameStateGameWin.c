@@ -99,29 +99,15 @@ void GameStateGameWinUpdate(float dt)
 	TraceMessage("GameWin: Update");
 	//GameStateLevel1MoveMonkey();
 	GameObjectUpdate(GOPtr, dt);
-	GameObjectDraw(GOPtr);
-
-	if (AEInputCheckTriggered(0x31))
-	{
-		GameStateManagerSetNextState(GsLevel1);
-	}
-	else if (AEInputCheckTriggered(0x33))
-	{
-		GameStateManagerSetNextState(GsGameWin);
-	}
+  GameObjectDraw(GOPtr);
 }
 
 // Shutdown any memory associated with the GameWin game state.
 void GameStateGameWinShutdown()
 {
 	TraceMessage("GameWin: Shutdown");
-	/*
-	AnimationFree(GameObjectGetAnimation(GOPtr));
-	FreePhysics(GameObjectGetPhysics(GOPtr));
-	FreeTransform(GameObjectGetTransform(GOPtr)));*/
+
 	GameObjectFree(&GOPtr);
-	GOPtr = NULL;
-	
 }
 
 // Unload the resources associated with the GameWin game state.

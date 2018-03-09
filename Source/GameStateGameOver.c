@@ -53,7 +53,7 @@ static AEGfxVertexList * xVerList;
 static SpriteSourcePtr SptP0;
 static AEVec2 xy;
 static TransformPtr trfPt;
-
+static AnimationPtr animation;
 //------------------------------------------------------------------------------
 // Private Function Declarations:
 //------------------------------------------------------------------------------
@@ -100,28 +100,14 @@ void GameStateGameOverUpdate(float dt)
 	//GameStateLevel1MoveMonkey();
 	GameObjectUpdate(GOPtr, dt);
 	GameObjectDraw(GOPtr);
-
-	if (AEInputCheckTriggered(0x31))
-	{
-		GameStateManagerSetNextState(GsLevel1);
-	}
-	else if (AEInputCheckTriggered(0x33))
-	{
-		GameStateManagerSetNextState(GsGameOver);
-	}
 }
 
 // Shutdown any memory associated with the GameOver game state.
 void GameStateGameOverShutdown()
 {
 	TraceMessage("GameOver: Shutdown");
-	/*
-	AnimationFree(GameObjectGetAnimation(GOPtr));
-	FreePhysics(GameObjectGetPhysics(GOPtr));
-	FreeTransform(GameObjectGetTransform(GOPtr)));*/
-	GameObjectFree(&GOPtr);
-	GOPtr = NULL;
 	
+	GameObjectFree(&GOPtr);
 }
 
 // Unload the resources associated with the GameOver game state.

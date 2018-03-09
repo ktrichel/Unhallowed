@@ -10,20 +10,20 @@
     <Filter Include="Game\GameStates">
       <UniqueIdentifier>{0fc2ef2e-d98c-4889-a1c2-72ec1c09f16d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Math">
-      <UniqueIdentifier>{29bd56ab-6e68-4e0e-81b7-f0995723a628}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\GameObjects">
       <UniqueIdentifier>{c4739de4-eb5c-45cd-b7f4-479effadb17a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\GameObjects\Transform">
-      <UniqueIdentifier>{72d14301-4367-4247-bd6b-c014873020ba}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\GameObjects\Graphics">
       <UniqueIdentifier>{b4f05833-7b58-4457-94c2-d951b07921d6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\GameObjects\Graphics\Physics">
       <UniqueIdentifier>{892b6a25-f9ad-4441-bbb6-a2437b22a291}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\GameObjects\Transform">
+      <UniqueIdentifier>{72d14301-4367-4247-bd6b-c014873020ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\GameObjects\Transform\Math">
+      <UniqueIdentifier>{29bd56ab-6e68-4e0e-81b7-f0995723a628}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -78,10 +78,10 @@
       <Filter>Engine\GameObjects\Graphics\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Matrix2D.c">
-      <Filter>Engine\Math</Filter>
+      <Filter>Engine\GameObjects\Transform\Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\Vector2D.c">
-      <Filter>Engine\Math</Filter>
+      <Filter>Engine\GameObjects\Transform\Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameObject.c">
       <Filter>Engine\GameObjects</Filter>
@@ -156,10 +156,10 @@
       <Filter>Engine\GameObjects\Graphics\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Matrix2D.h">
-      <Filter>Engine\Math</Filter>
+      <Filter>Engine\GameObjects\Transform\Math</Filter>
     </ClInclude>
     <ClInclude Include="Source\Vector2D.h">
-      <Filter>Engine\Math</Filter>
+      <Filter>Engine\GameObjects\Transform\Math</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameObject.h">
       <Filter>Engine\GameObjects</Filter>

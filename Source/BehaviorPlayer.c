@@ -24,9 +24,9 @@
 
 enum Player
 {
-  cSpaceplayerInvalid,
-  cSpaceplayerIdle,
-  cSpaceplayerThrust
+  cplayerInvalid,
+  cplayerIdle,
+  cplayerThrust
 };
 
 static const float playerAcceleration = 150.0f;
@@ -61,15 +61,15 @@ static void BehaviorPlayerSpawnBullet(BehaviorPtr behavior);
 // Public Functions:
 //------------------------------------------------------------------------------
 
-// Dynamically allocate a new (Spaceplayer) behavior component.
+// Dynamically allocate a new (player) behavior component.
 // (Hint: Use calloc() to ensure that all member variables are initialized to 0.)
 BehaviorPtr BehaviorPlayerCreate(void)
 {
   BehaviorPtr behavior = calloc(1, sizeof(Behavior));
   if (behavior)
   {
-    behavior->stateCurr = cSpaceplayerInvalid;
-    behavior->stateNext = cSpaceplayerIdle;
+    behavior->stateCurr = cplayerInvalid;
+    behavior->stateNext = cplayerIdle;
     behavior->onInit = BehaviorPlayerInit;
     behavior->onExit = BehaviorPlayerExit;
     behavior->onUpdate = BehaviorPlayerUpdate;
@@ -97,18 +97,18 @@ void BehaviorPlayerUpdate(BehaviorPtr behavior, float dt)
 {
   switch (behavior->stateCurr)
   {
-  case cSpaceplayerIdle:
+  case cplayerIdle:
     BehaviorPlayerUpdateWeapon(behavior, dt);
    /* if (AEInputCheckTriggered(VK_UP))
     {
-      behavior->stateNext = cSpaceplayerThrust;
+      behavior->stateNext = cplayerThrust;
     }*/
     break;
-  case cSpaceplayerThrust:
+  case cplayerThrust:
     BehaviorPlayerUpdateWeapon(behavior, dt);
     /*if (!AEInputCheckCurr(VK_UP))
     {
-      behavior->stateNext = cSpaceplayerIdle;
+      behavior->stateNext = cplayerIdle;
     }*/
     break;
   default:

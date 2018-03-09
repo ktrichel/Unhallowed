@@ -212,6 +212,14 @@ void GameStateLevel1Update(float dt)
 	{
 		GameStateManagerSetNextState(GsRestart);
 	}
+	else if (AEInputCheckCurr(0x33))
+	{
+		GameStateManagerSetNextState(GsGameOver);
+	}
+	else if (AEInputCheckCurr(0x34))
+	{
+		GameStateManagerSetNextState(GsGameWin);
+	}
 
 	if (AEInputCheckCurr('D') &&  
 		CollisionCheckCollidedSide(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(collidedTile)) != 1)

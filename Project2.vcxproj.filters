@@ -77,12 +77,6 @@
     <ClCompile Include="Source\Physics.c">
       <Filter>Engine\GameObjects\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Matrix2D.c">
-      <Filter>Engine\GameObjects\Transform\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Vector2D.c">
-      <Filter>Engine\GameObjects\Transform\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GameObject.c">
       <Filter>Engine\GameObjects</Filter>
     </ClCompile>
@@ -112,6 +106,14 @@
     </ClCompile>
     <ClCompile Include="Source\GameObjectManager.c">
       <Filter>Engine\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Matrix2D.c" />
+    <ClCompile Include="Source\Vector2D.c" />
+    <ClCompile Include="Source\GameStateGameOver.c">
+      <Filter>Game\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameStateGameWin.c">
+      <Filter>Game\GameStates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -167,12 +169,6 @@
     <ClInclude Include="Source\Physics.h">
       <Filter>Engine\GameObjects\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Matrix2D.h">
-      <Filter>Engine\GameObjects\Transform\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Vector2D.h">
-      <Filter>Engine\GameObjects\Transform\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Source\GameObject.h">
       <Filter>Engine\GameObjects</Filter>
     </ClInclude>
@@ -202,6 +198,14 @@
     </ClInclude>
     <ClInclude Include="Source\GameObjectManager.h">
       <Filter>Engine\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Matrix2D.h" />
+    <ClInclude Include="Source\Vector2D.h" />
+    <ClInclude Include="Source\GameStateGameOver.h">
+      <Filter>Game\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameStateGameWin.h">
+      <Filter>Game\GameStates</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

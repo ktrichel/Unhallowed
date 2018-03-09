@@ -16,6 +16,8 @@
 /* Include all game state headers here. */
 #include "GameStateLevel1.h"
 #include "GameStateLevel2.h"
+#include "GameStateGameOver.h"
+#include "GameStateGameWin.h"
 
 //------------------------------------------------------------------------------
 // Private Consts:
@@ -49,8 +51,9 @@ typedef struct
 static const GameStateTableEntry GameStateTab[GsNum] =
 {
 	{ GameStateLevel1Load, GameStateLevel1Init, GameStateLevel1Update, GameStateLevel1Shutdown, GameStateLevel1Unload },
-	{ GameStateLevel2Load, GameStateLevel2Init, GameStateLevel2Update, GameStateLevel2Shutdown, GameStateLevel2Unload }
-
+	{ GameStateLevel2Load, GameStateLevel2Init, GameStateLevel2Update, GameStateLevel2Shutdown, GameStateLevel2Unload },
+    { GameStateGameOverLoad, GameStateGameOverInit, GameStateGameOverUpdate, GameStateGameOverShutdown, GameStateGameOverUnload },
+    { GameStateGameWinLoad, GameStateGameWinInit, GameStateGameWinUpdate, GameStateGameWinShutdown, GameStateGameWinUnload }
 	// TODO: Add new game states here.
 };
 

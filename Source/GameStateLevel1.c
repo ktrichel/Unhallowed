@@ -139,6 +139,7 @@ void GameStateLevel1Init()
   GameObjectSetSprite(background, bgSprite);
 
   GameStateAsteroidsCreateBulletArchetype();
+  GameStateAsteroidsCreateEnemyArchetype();
 
   Vector2DSet(&Empty, 0.0f, 0.0f);
 	int i = 0;
@@ -205,11 +206,6 @@ void GameStateLevel1Update(float dt)
 	TraceMessage("Level1: Update");
 
 	GameObjectPtr collidedTile = GameObjectFactoryCollision(Character);
-
-	if (AEInputCheckCurr(0x31))
-	{
-		GameStateManagerSetNextState(GsRestart);
-	}
 
 	if (AEInputCheckCurr('D') &&  
 		CollisionCheckCollidedSide(GameObjectGetBoundingBox(Character), GameObjectGetBoundingBox(collidedTile)) != 1)

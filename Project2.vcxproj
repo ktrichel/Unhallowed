@@ -23,6 +23,8 @@
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\GameObjectFactory.h" />
     <ClInclude Include="Source\GameObjectManager.h" />
+    <ClInclude Include="Source\GameStateGameOver.h" />
+    <ClInclude Include="Source\GameStateGameWin.h" />
     <ClInclude Include="Source\GameStateLevel1.h" />
     <ClInclude Include="Source\GameStateLevel2.h" />
     <ClInclude Include="Source\GameStateManager.h" />
@@ -52,6 +54,8 @@
     <ClCompile Include="Source\GameObject.c" />
     <ClCompile Include="Source\GameObjectFactory.c" />
     <ClCompile Include="Source\GameObjectManager.c" />
+    <ClCompile Include="Source\GameStateGameOver.c" />
+    <ClCompile Include="Source\GameStateGameWin.c" />
     <ClCompile Include="Source\GameStateLevel1.c" />
     <ClCompile Include="Source\GameStateLevel2.c" />
     <ClCompile Include="Source\GameStateManager.c" />

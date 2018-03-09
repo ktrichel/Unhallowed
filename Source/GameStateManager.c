@@ -13,6 +13,7 @@
 #include "GameStateManager.h"
 #include "GameStateTable.h"
 #include "Trace.h"
+#include <AEEngine.h>
 
 //------------------------------------------------------------------------------
 // Private Consts:
@@ -67,6 +68,26 @@ void GameStateManagerInit()
 void GameStateManagerUpdate(float dt)
 {
 	TraceMessage("GSM: Update");
+
+  if (IsDebuggerPresent())
+  {
+    if (AEInputCheckTriggered(0x31))
+    {
+      GameStateManagerSetNextState(GsLevel1);
+    }
+    else if (AEInputCheckTriggered(0x32))
+    {
+      GameStateManagerSetNextState(GsGameWin);
+    }
+    else if (AEInputCheckTriggered(0x33))
+    {
+      GameStateManagerSetNextState(GsGameOver);
+    }
+    else if (AEInputCheckTriggered('R'))
+    {
+      GameStateManagerSetNextState(GsRestart);
+    }
+  }
 
 	// Check for a game state change.
 	if (GameStateIsChanging())

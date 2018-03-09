@@ -15,6 +15,7 @@
 #include "GameObjectManager.h"
 #include "System.h"
 #include "Trace.h"
+#include <AEEngine.h>
 
 //------------------------------------------------------------------------------
 // Private Consts:
@@ -58,6 +59,7 @@ void EngineInit()
 	//--------------------------------------------------------------------------
 	// NOTE: Other modules can be initialized later and in any order.
 	//--------------------------------------------------------------------------
+  AESysSetWindowTitle("Unhallowed");
 
   GameObjectManagerInit();
   

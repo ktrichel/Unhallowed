@@ -169,8 +169,8 @@ void BehaviorPlayerSpawnBullet(BehaviorPtr behavior)
     GameObjectPtr clone = GameObjectClone(bullet);
     TransformPtr tClone = GameObjectGetTransform(clone);
     TransformPtr player = GameObjectGetTransform(behavior->parent);
-    float playerRotation = TransformGetRotation(player);
     Vector2D playerTranslate = *TransformGetTranslation(player);
+
     Vector2DSet(&Mouse, worldX, worldY);
     Vector2DSub(&Normal, &Mouse, &playerTranslate);
     Vector2DNormalize(&Normal, &Normal);
@@ -179,11 +179,7 @@ void BehaviorPlayerSpawnBullet(BehaviorPtr behavior)
     TransformSetTranslation(tClone, &playerTranslate);
     TransformSetRotation(tClone, angle);
     GameObjectSetTransform(clone, tClone);
-    Vector2D rotate = { 0 };
-    Vector2DFromAngleRad(&rotate, playerRotation);
     PhysicsPtr pClone = GameObjectGetPhysics(clone);
-    Vector2D velocity = { 0 };
-    Vector2DScale(&velocity, &rotate, playerWeaponBulletSpeed);
     PhysicsVelocity(pClone, &Normal);
     GameObjectSetPhysics(clone, pClone);
 

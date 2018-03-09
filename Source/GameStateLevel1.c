@@ -112,11 +112,11 @@ void GameStateLevel1Load()
 
 	pMesh = MeshCreateQuad(50, 50, 0.5, 0.5, "Mesh4x4");
 	pMesh2 = MeshCreateQuad(300, 300, 1, 1, "Mesh1x1");
-	pMeshBullet = MeshCreateQuad(50, 25, .5, .25, "Mesh1x1");
+	pMeshBullet = MeshCreateQuad(25, 25, 1, 1, "Mesh1x1");
   bgMesh = MeshCreateQuad(1000, 1000, 1, 1, "Mesh1x1");
 	pTexture = AEGfxTextureLoad("Assets\\Knight.png");
 	pTexture2 = AEGfxTextureLoad("Assets\\Brick.png");
-	pTexture3 = AEGfxTextureLoad("Assets\\runningcat.png");
+	pTexture3 = AEGfxTextureLoad("Assets\\Bullet.png");
   bgTexture = AEGfxTextureLoad("Assets\\PlanetTexture.png");
 	pSSource = SpriteSourceCreate(2, 2, pTexture);
 	pSSource2 = SpriteSourceCreate(1, 1, pTexture2);
@@ -186,7 +186,7 @@ void GameStateLevel1Init()
 	*/
 
 	//Set Alpha Engine BG to white(1,1,1)
-  AEGfxSetBackgroundColor(0.8f, 0.3f, 0.1f);
+  AEGfxSetBackgroundColor(0.3f, 0.3f, 0.1f);
 
 	//Set AEG blend mode to blend
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);

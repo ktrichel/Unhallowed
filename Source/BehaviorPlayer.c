@@ -170,7 +170,7 @@ void BehaviorPlayerSpawnBullet(BehaviorPtr behavior)
     TransformPtr tClone = GameObjectGetTransform(clone);
     TransformPtr player = GameObjectGetTransform(behavior->parent);
     Vector2D playerTranslate = *TransformGetTranslation(player);
-
+    BoundingBoxPtr box = GameObjectGetBoundingBox(bullet);
     Vector2DSet(&Mouse, worldX, worldY);
     Vector2DSub(&Normal, &Mouse, &playerTranslate);
     Vector2DNormalize(&Normal, &Normal);
@@ -182,6 +182,7 @@ void BehaviorPlayerSpawnBullet(BehaviorPtr behavior)
     PhysicsPtr pClone = GameObjectGetPhysics(clone);
     PhysicsVelocity(pClone, &Normal);
     GameObjectSetPhysics(clone, pClone);
+    GameObjectSetBoundingBox(clone, box);
 
     GameObjectManagerAdd(clone);
   }

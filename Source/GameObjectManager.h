@@ -128,6 +128,7 @@ GameObjectPtr GameObjectManagerGetObjectByName(const char * name);
 //	   else return NULL.
 GameObjectPtr GameObjectManagerGetArchetype(const char * name);
 
+bool GameObjectListCollision(BoundingBoxPtr enemy);
 //------------------------------------------------------------------------------
 
 #ifdef __cplusplus

@@ -28,6 +28,7 @@
 #include "BehaviorBullet.h"
 #include "GameObjectManager.h"
 #include "BehaviorPlayer.h"
+#include "BehaviorEnemy.h"
 #include <AEEngine.h>
 #include <stdlib.h>
 
@@ -65,6 +66,7 @@ static SpriteSourcePtr pSSource3;
 static AnimationPtr pAnimation;
 static Vector2D Position;
 static GameObjectPtr Character;
+static GameObjectPtr Enemy;
 static GameObjectPtr Earth;
 
 static AEGfxVertexList*	pMeshBullet = NULL;
@@ -73,8 +75,6 @@ static AEGfxVertexList* bgMesh;
 static AEGfxTexture* bgTexture;
 static SpriteSourcePtr bgSSource;
 static SpritePtr bgSprite;
-static TransformPtr bgTransform;
-static GameObjectPtr background;
 
 static TransformPtr objTransform;
 static PhysicsPtr objPhysics;
@@ -100,7 +100,9 @@ static Vector2D Distance = { 0 };
 
 static GameObjectPtr GameStateLevel2CreateCharacter(void);
 static GameObjectPtr GameStateLevel2CreateEarth(void);
+static GameObjectPtr GameStateLevel2CreateEnemy(void);
 static void GameStateAsteroidsCreateBulletArchetype(void);
+//static void GameStateAsteroidsCreateEnemyArchetype(void);
 
 //------------------------------------------------------------------------------
 // Public Functions:
@@ -113,7 +115,7 @@ void GameStateLevel1Load()
 	pMesh = MeshCreateQuad(50, 50, 0.5, 0.5, "Mesh4x4");
 	pMesh2 = MeshCreateQuad(300, 300, 1, 1, "Mesh1x1");
 	pMeshBullet = MeshCreateQuad(25, 25, 1, 1, "Mesh1x1");
-  bgMesh = MeshCreateQuad(1000, 1000, 1, 1, "Mesh1x1");
+  bgMesh = MeshCreateQuad(25, 25, 1, 1, "Mesh1x1");
 	pTexture = AEGfxTextureLoad("Assets\\Knight.png");
 	pTexture2 = AEGfxTextureLoad("Assets\\Brick.png");
 	pTexture3 = AEGfxTextureLoad("Assets\\Bullet.png");
@@ -128,23 +130,14 @@ void GameStateLevel1Init()
 {
 	TraceMessage("Level1: Init");
 
-  background = GameObjectCreate("BG");
-  bgTransform = CreateTransform();
-  TransformSetRotation(bgTransform, 0);
-  TransformSetScale(bgTransform, EarthPos);
-  bgSprite = SpriteCreate("BG");
-  SpriteSetMesh(bgSprite, bgMesh);
-  SpriteSetSpriteSource(bgSprite, bgSSource);
-  GameObjectSetTransform(background, bgTransform);
-  GameObjectSetSprite(background, bgSprite);
-
   GameStateAsteroidsCreateBulletArchetype();
-  GameStateAsteroidsCreateEnemyArchetype();
+  //GameStateAsteroidsCreateEnemyArchetype();
 
   Vector2DSet(&Empty, 0.0f, 0.0f);
 	int i = 0;
 	Vector2DSet(&Distance, EarthHalfSize.x * tileScale.x * 2.0f, 0.0f);
 	Character = GameStateLevel2CreateCharacter();
+  Enemy = GameStateLevel2CreateEnemy();
 
 	while(i < 20)
 	{
@@ -272,16 +265,25 @@ void GameStateLevel1Update(float dt)
 	 SetPhysicsTranslation(GameObjectGetPhysics(Character), Empty);
 	}
 
+  /*
+  if (GameObjectListCollision(GameObjectGetBoundingBox(Enemy)))
+  {
+    int health = GameObjectGetHealth(Enemy);
+    health--;
+    GameObjectSetHealth(Enemy, health);
+  }
+  */
 
 	//UpdateBoundingBox(GameObjectGetBoundingBox(Character), GetOldTranslation(GameObjectGetPhysics(Character)));
 
 	GameObjectUpdate(Character, dt);
+  GameObjectUpdate(Enemy, dt);
 	GameObjectFactoryUpdate(dt);
 
   
 	GameObjectDraw(Character);
+  GameObjectDraw(Enemy);
 	GameObjectFactoryDraw();
-  GameObjectDraw(background);
 
 	AEGfxSetCamPosition(GetOldTranslation(GameObjectGetPhysics(Character)).x, GetOldTranslation(GameObjectGetPhysics(Character)).y);
 }
@@ -296,7 +298,7 @@ void GameStateLevel1Shutdown()
 	SpriteSourceFree(&pSSource3);
   SpriteSourceFree(&bgSSource);
 	GameObjectFree(&Character);
-  GameObjectFree(&background);
+  GameObjectFree(&Enemy);
 }
 
 void GameStateLevel1Unload()
@@ -344,9 +346,40 @@ static GameObjectPtr GameStateLevel2CreateCharacter(void)
 
 }
 
+static GameObjectPtr GameStateLevel2CreateEnemy(void)
+{
+  const Vector2D Scale = { 1.0f, 1.0f };
+  const Vector2D EnemySpawn = { 500.0f, 500.0f };
+
+  GameObjectPtr gObject = GameObjectCreate("Enemy");
+  GameObjectSetTransform(gObject, CreateTransform());
+  TransformSetScale(GameObjectGetTransform(gObject), Scale);
+  TransformSetRotation(GameObjectGetTransform(gObject), 0);
+  TransformSetTranslation(GameObjectGetTransform(gObject), &EnemySpawn);
+
+  SpritePtr CharacterSprite = SpriteCreate("Enemy Sprite");
+  SpriteSetMesh(CharacterSprite, pMesh);
+  SpriteSetSpriteSource(CharacterSprite, pSSource);
+  GameObjectSetSprite(gObject, CharacterSprite);
+
+  GameObjectSetAnimation(gObject, AnimationCreate(CharacterSprite));
+  AnimationPlay(GameObjectGetAnimation(gObject), 1, 0.1f, false);
+  GameObjectSetPhysics(gObject, PhysicsCreate());
+  GameObjectSetBoundingBox(gObject, CreateBoundingBox(Empty, PlayerHalfSize));
+  //GameObjectSetBehavior(gObject, BehaviorPlayerCreate());
+
+  GameObjectSetHealth(gObject, 10);
+
+  return gObject;
+
+}
+
 static void GameStateAsteroidsCreateBulletArchetype(void)
 {
   Vector2D scale = { 1, 1 };
+  //Vector2D zero = {50.0f, 50.0f};
+  //const Vector2D EnemySpawn = { 500.0f, 500.0f };
+
   GameObjectPtr bullet = GameObjectCreate("Bullet");
   TransformPtr trBullet = TransformCreate(0, 0);
   SpritePtr sprBullet = SpriteCreate("Bullet Sprite");
@@ -364,35 +397,16 @@ static void GameStateAsteroidsCreateBulletArchetype(void)
   GameObjectSetPhysics(bullet, phyByllet);
   GameObjectSetBehavior(bullet, bBullet);
 
+  //BoundingBoxPtr boxBullet = CreateBoundingBox(EnemySpawn, zero);
+
+  //GameObjectSetBoundingBox(bullet, boxBullet);
   GameObjectManagerAddArchetype(bullet);
 }
 
-static void GameStateAsteroidsCreateEnemy(void)
-{
-  Vector2D scale = { 50, 50 };
-  GameObjectPtr enemy = GameObjectCreate("Enemy");
-  TransformPtr trEnemy = TransformCreate(0, 0);
-  SpritePtr sprEnemy = SpriteCreate("Enemy Sprite");
-  PhysicsPtr phyEnemy = PhysicsCreate();
-  BehaviorPtr bEnemy = BehaviorEnemyCreate();
-
-  TransformSetRotation(trEnemy, 0);
-  TransformSetScale(trEnemy, scale);
-
-  SpriteSetSpriteSource(sprEnemy, pSSource3);
-  SpriteSetMesh(sprEnemy, pMeshBullet);
-
-  GameObjectSetTransform(enemy, trEnemy);
-  GameObjectSetSprite(enemy, sprEnemy);
-  GameObjectSetPhysics(enemy, phyEnemy);
-  GameObjectSetBehavior(enemy, bEnemy);
-
-  GameObjectManagerAdd(enemy);
-}
-
+/*
 static void GameStateAsteroidsCreateEnemyArchetype(void)
 {
-  Vector2D scale = { 50, 50 };
+  Vector2D scale = { 1, 1 };
   GameObjectPtr enemy = GameObjectCreate("Enemy");
   TransformPtr trEnemy = TransformCreate(0, 0);
   SpritePtr sprEnemy = SpriteCreate("Enemy Sprite");
@@ -402,8 +416,8 @@ static void GameStateAsteroidsCreateEnemyArchetype(void)
   TransformSetRotation(trEnemy, 0);
   TransformSetScale(trEnemy, scale);
 
-  SpriteSetSpriteSource(sprEnemy, pSSource3);
-  SpriteSetMesh(sprEnemy, pMeshBullet);
+  SpriteSetSpriteSource(sprEnemy, bgSSource);
+  SpriteSetMesh(sprEnemy, bgMesh);
 
   GameObjectSetTransform(enemy, trEnemy);
   GameObjectSetSprite(enemy, sprEnemy);
@@ -412,3 +426,4 @@ static void GameStateAsteroidsCreateEnemyArchetype(void)
 
   GameObjectManagerAddArchetype(enemy);
 }
+*/

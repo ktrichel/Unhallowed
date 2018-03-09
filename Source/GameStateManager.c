@@ -69,8 +69,7 @@ void GameStateManagerUpdate(float dt)
 {
 	TraceMessage("GSM: Update");
 
-  if (IsDebuggerPresent())
-  {
+  
     if (AEInputCheckTriggered(0x31))
     {
       GameStateManagerSetNextState(GsLevel1);
@@ -87,7 +86,7 @@ void GameStateManagerUpdate(float dt)
     {
       GameStateManagerSetNextState(GsRestart);
     }
-  }
+  
 
 	// Check for a game state change.
 	if (GameStateIsChanging())

@@ -85,7 +85,7 @@ void GameStateGameOverInit()
 	GOPtr = GameStateLevel1CreateMonkey();
 	AEGfxSetBackgroundColor(0, 0, 0);
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
-	AEGfxSetCamPosition(0,100);
+	AEGfxSetCamPosition(10,90);
 }
 
 // Update the Level1 game state.

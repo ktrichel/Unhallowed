@@ -71,7 +71,7 @@ void GameStateGameWinLoad()
 	TraceMessage("GameWin: Load");
 
 	xVerList = MeshCreateQuad(0.5, 0.5, 1.0f, 1.0f, "Mesh3x3");
-	pTexture = AEGfxTextureLoad("Assets\\Game_Win_Screen.png");
+	pTexture = AEGfxTextureLoad("Assets\\DigiPen_RGB_Red.jpg");
 	if (pTexture != NULL)
 	{
 		SptP0 = SpriteSourceCreate(1, 1, pTexture);
@@ -85,7 +85,7 @@ void GameStateGameWinInit()
 	GOPtr = GameStateLevel1CreateMonkey();
 	AEGfxSetBackgroundColor(0, 0, 0);
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
-	AEGfxSetCamPosition(0, 100);
+  AEGfxSetCamPosition(95, 90);
 }
 
 // Update the Level1 game state.
@@ -138,8 +138,8 @@ static GameObjectPtr GameStateLevel1CreateMonkey(void)
 	GOPtr = GameObjectCreate("Monkey");
 	trfPt = TransformCreate(100, groundHeight);
 	Vector2D vec;
-	vec.x = 980;
-	vec.y = 600;
+	vec.x = 800;
+	vec.y = 550;
 	
 
 	if (trfPt != NULL)

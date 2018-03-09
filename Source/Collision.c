@@ -99,8 +99,10 @@ bool CollisionCheck(BoundingBoxPtr box1, BoundingBoxPtr box2)
 		if (box1->Position.y + box1->HalfSize.y < box2->Position.y)
 			return false;
 		*/
+
+    return true;
 	}
-	return true;
+	return false;
 }
 
 // call after a collision has been confirmed

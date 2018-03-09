@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 
 #include "stdafx.h"
+#include "Collision.h"
 #include "GameObjectManager.h"
 
 //------------------------------------------------------------------------------
@@ -123,7 +124,7 @@ void GameObjectManagerShutdown(void)
   for (unsigned int i = 0; i < gameObjectArchetypes.objectMax; i++)
   {
     GameObjectFree(&(gameObjectArchetypes.objectList[i]));
-    gameObjectActiveList.objectList[i] = NULL;
+    gameObjectArchetypes.objectList[i] = NULL;
     gameObjectArchetypes.objectCount--;
   }
 }
@@ -194,6 +195,7 @@ void AddToList(GameObjectManager *list, GameObjectPtr gameObject)
       if (list->objectList[i] == NULL)
       {
         list->objectList[i] = gameObject;
+        list->objectCount++;
         return;
       }
       i++;
@@ -214,4 +216,22 @@ GameObjectPtr FindName(const GameObjectManager *list, const char * name)
     }
   }
   return NULL;
+}
+
+bool GameObjectListCollision(BoundingBoxPtr enemy)
+{
+  unsigned int i = 0;
+  BoundingBoxPtr box = NULL;
+
+  for (i = 0; i < gameObjectActiveList.objectCount; ++i)
+  {
+    box = GameObjectGetBoundingBox(gameObjectActiveList.objectList[i]);
+
+    if (CollisionCheck(enemy, box) && box)
+    {
+      GameObjectDestroy(gameObjectActiveList.objectList[i]);
+      return true;
+    }
+  }
+  return false;
 }

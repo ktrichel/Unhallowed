@@ -17,7 +17,7 @@
 #include "BehaviorBullet.h"
 #include "GameObjectManager.h"
 #include <AEEngine.h>
-#include <cstdlib>
+#include <stdlib.h>
 //------------------------------------------------------------------------------
 // Private Consts:
 //------------------------------------------------------------------------------
@@ -58,6 +58,8 @@ static void BehaviorEnemyUpdateRotation(BehaviorPtr behavior, float dt);
 static void BehaviorEnemyUpdateVelocity(BehaviorPtr behavior, float dt);
 static void BehaviorEnemyUpdateWeapon(BehaviorPtr behavior, float dt);
 static void BehaviorEnemySpawnBullet(BehaviorPtr behavior);
+static void BehaviorEnemyUpdatePosition(BehaviorPtr behavior, float dt);
+static void BehaviorSpawnEnemy(BehaviorPtr behavior);
 
 
 //------------------------------------------------------------------------------
@@ -168,17 +170,17 @@ void BehaviorEnemyUpdatePosition(BehaviorPtr behavior, float dt)
     if (timer <= 0)
     {
       PhysicsPtr enemyPhysics = PhysicsCreate();
-      Vector2D enemyVelocityX = { 0 };
+      Vector2D enemyVelocity = { 0 };
       int posNeg = rand() % 10;
       if (posNeg < 5)
       {
-        Vector2D enemyVelocityX = { (float)(rand() % 10), 0 };
+        enemyVelocity.x = (float)(rand() % 10);
       }
       else if (posNeg >= 5)
       {
-        Vector2D enemyVelocityX = { -(float)(rand() % 10), 0 };
+        enemyVelocity.x = -(float)(rand() % 10);
       }
-      PhysicsVelocity(enemyPhysics, &enemyVelocityX);
+      PhysicsVelocity(enemyPhysics, &enemyVelocity);
       GameObjectSetPhysics(behavior->parent, enemyPhysics);
     }
 }
@@ -196,7 +198,6 @@ void BehaviorEnemySpawnBullet(BehaviorPtr behavior)
     GameObjectPtr clone = GameObjectClone(bullet);
     TransformPtr tClone = GameObjectGetTransform(clone);
     TransformPtr enemy = GameObjectGetTransform(behavior->parent);
-    float enemyRotation = TransformGetRotation(enemy);
     Vector2D enemyTranslate = *TransformGetTranslation(enemy);
     Vector2DSet(&Player, (float)(rand()%100), (float)(rand()%100));
     Vector2DSub(&Normal, &Player, &enemyTranslate);
@@ -206,15 +207,38 @@ void BehaviorEnemySpawnBullet(BehaviorPtr behavior)
     TransformSetTranslation(tClone, &enemyTranslate);
     TransformSetRotation(tClone, angle);
     GameObjectSetTransform(clone, tClone);
-    Vector2D rotate = { 0 };
-    Vector2DFromAngleRad(&rotate, enemyRotation);
     PhysicsPtr pClone = GameObjectGetPhysics(clone);
-    Vector2D velocity = { 0 };
-    Vector2DScale(&velocity, &rotate, enemyWeaponBulletSpeed);
     PhysicsVelocity(pClone, &Normal);
     GameObjectSetPhysics(clone, pClone);
 
     GameObjectManagerAdd(clone);
   }
- 
 }
+/*
+static void BehaviorSpawnEnemy(BehaviorPtr behavior)
+{
+  GameObjectPtr enemy = GameObjectManagerGetArchetype("Enemy");
+
+  Vector2D Player;
+  Vector2D Normal;
+
+  if (enemy)
+  {
+    GameObjectPtr clone = GameObjectClone(enemy);
+    TransformPtr tClone = GameObjectGetTransform(clone);
+    TransformPtr actor = GameObjectGetTransform(behavior->parent);
+    Vector2D actorTranslate = *TransformGetTranslation(actor);
+
+    Vector2DSet(&actorTranslate, 100, 100);
+    float angle = atan2f(actorTranslate.x, actorTranslate.y);
+    TransformSetTranslation(tClone, &actorTranslate);
+    TransformSetRotation(tClone, angle);
+    GameObjectSetTransform(clone, tClone);
+    PhysicsPtr pClone = GameObjectGetPhysics(clone);
+    PhysicsVelocity(pClone, &actorTranslate);
+    GameObjectSetPhysics(clone, pClone);
+
+    GameObjectManagerAdd(clone);
+  }
+}
+*/
